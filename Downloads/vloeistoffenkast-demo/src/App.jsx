@@ -182,6 +182,16 @@ const GF=`@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;
   .modal-overlay{justify-content:center!important;padding:32px 16px!important;overflow-y:auto!important;align-items:flex-start!important;}
   .modal-box{min-height:0!important;border-radius:20px!important;box-shadow:0 28px 64px rgba(0,0,0,0.5)!important;overflow:hidden!important;}
 }
+/* Fix 5 — Grotere labels op desktop */
+@media(min-width:640px){
+  .lbl-responsive{font-size:11px!important;letter-spacing:0.5px!important;}
+  .text-sm-responsive{font-size:12px!important;}
+}
+/* Fix 6 — Admin formulieren: 3 kolommen op desktop */
+@media(min-width:640px){
+  .admin-grid-2{grid-template-columns:1fr 1fr!important;}
+  .admin-grid-3{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;gap:8px!important;}
+}
 /* Fix 4 — Hover effecten (desktop) */
 .card-hover{transition:transform .15s ease,filter .15s ease;}
 .card-hover:hover{transform:translateY(-4px);filter:brightness(1.07);}
@@ -695,7 +705,7 @@ function AccountLoginPanel({accounts,onSuccess,onFail,loginErr,onClear,roleColor
     <div>
       {accounts.length>1&&(
         <div style={{marginBottom:14}}>
-          <label style={S.lbl}>Selecteer je naam</label>
+          <label className="lbl-responsive" style={S.lbl}>Selecteer je naam</label>
           <div style={{position:"relative"}}>
             <select style={{...S.inp,width:"100%",borderColor:roleColor+"66",paddingRight:36,appearance:"none",WebkitAppearance:"none"}}
               value={selectedId}
@@ -748,7 +758,7 @@ function LoginCard({acc,onSuccess,onFail,hasErr,onClear,hideRole}){
       {hideRole&&<div style={{fontSize:15,fontWeight:900,color:isMgr?"#E8632A":"#3D8B2E",marginBottom:14}}>{acc.username}</div>}
       {isLocked&&<div style={{background:"#FDEDEA",border:"1.5px solid #D44A2A",borderRadius:10,padding:"9px 12px",fontSize:12,fontWeight:700,color:"#D44A2A",marginBottom:10}}>Geblokkeerd — wacht 30 seconden</div>}
       {!isLocked&&hasErr&&<div style={{background:"#FDEDEA",border:"1.5px solid #D44A2A",borderRadius:10,padding:"9px 12px",fontSize:12,fontWeight:700,color:"#D44A2A",marginBottom:10}}>Onjuist wachtwoord{attempts>0?` (${attempts}/3)`:""}</div>}
-      <label style={S.lbl}>Wachtwoord</label>
+      <label className="lbl-responsive" style={S.lbl}>Wachtwoord</label>
       <div style={{position:"relative",width:"100%"}}>
         <input style={{...S.inp,paddingRight:44,marginBottom:12,borderColor:hasErr?"#D44A2A":"#C8E6B0"}}
           type={showPw?"text":"password"} placeholder="Voer wachtwoord in" value={pass}
@@ -961,17 +971,20 @@ function AdminPanel({cfg,onSave}){
       <div className="resp-wide" style={{width:"100%",maxWidth:460,padding:"14px 14px 0",margin:"0 auto"}}>
         {tab==="lekbakken"&&<div>
           {local.shelves.map((sh,si)=><div key={sh.id} style={ac}>
-            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
-              <div style={{width:16,height:16,borderRadius:"50%",background:sh.color,flexShrink:0}}/>
-              <div style={{flex:1,display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
+            <div className="admin-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8,alignItems:"end"}}>
+              <div>
+                <label className="lbl-responsive" style={al}>Label</label>
                 <input style={ai} value={sh.label} onChange={e=>upd(`shelves.${si}.label`,e.target.value)}/>
+              </div>
+              <div>
+                <label className="lbl-responsive" style={al}>Sublabel</label>
                 <input style={ai} value={sh.sublabel} onChange={e=>upd(`shelves.${si}.sublabel`,e.target.value)}/>
               </div>
-              <button style={{background:"none",border:`1.5px solid ${sh.active?"#2A5A1A":"#5A1A1A"}`,color:sh.active?"#7FE060":"#CC6666",borderRadius:8,width:30,height:30,cursor:"pointer",fontSize:11,fontWeight:800}} onClick={()=>upd(`shelves.${si}.active`,!sh.active)}>{sh.active?"AAN":"UIT"}</button>
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 60px",gap:8}}>
-              <div><label style={al}>Max liters</label><input style={{...ai,width:"100%"}} type="number" value={sh.maxLiters} onChange={e=>upd(`shelves.${si}.maxLiters`,parseFloat(e.target.value)||10)}/></div>
-              <div><label style={al}>Kleur</label><input type="color" value={sh.color} style={{width:"100%",height:36,border:"none",background:"transparent",cursor:"pointer"}} onChange={e=>upd(`shelves.${si}.color`,e.target.value)}/></div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 52px 44px",gap:6,alignItems:"end"}}>
+                <div><label className="lbl-responsive" style={al}>Max liters</label><input style={{...ai,width:"100%"}} type="number" value={sh.maxLiters} onChange={e=>upd(`shelves.${si}.maxLiters`,parseFloat(e.target.value)||10)}/></div>
+                <div><label className="lbl-responsive" style={al}>Kleur</label><input type="color" value={sh.color} style={{width:"100%",height:36,border:"none",background:"transparent",cursor:"pointer"}} onChange={e=>upd(`shelves.${si}.color`,e.target.value)}/></div>
+                <div style={{paddingBottom:2}}><button style={{background:"none",border:`1.5px solid ${sh.active?"#2A5A1A":"#5A1A1A"}`,color:sh.active?"#7FE060":"#CC6666",borderRadius:8,width:"100%",height:36,cursor:"pointer",fontSize:10,fontWeight:800}} onClick={()=>upd(`shelves.${si}.active`,!sh.active)}>{sh.active?"AAN":"UIT"}</button></div>
+              </div>
             </div>
           </div>)}
           <button style={sv} onClick={save}>{saved?"Opgeslagen!":"Opslaan"}</button>
@@ -1028,15 +1041,15 @@ function AdminPanel({cfg,onSave}){
               <button style={{background:"none",border:`1.5px solid ${acc.active?"#2A5A1A":"#5A1A1A"}`,color:acc.active?"#7FE060":"#CC6666",borderRadius:8,width:38,height:28,cursor:"pointer",fontSize:10,fontWeight:800}} onClick={()=>upd(`accounts.${ai_}.active`,!acc.active)}>{acc.active?"AAN":"UIT"}</button>
               <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.accounts.splice(ai_,1);setLocal(n);}}>×</button>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:6}}>
-              <div><label style={al}>Naam</label><input style={ai} value={acc.username} onChange={e=>upd(`accounts.${ai_}.username`,e.target.value)}/></div>
-              <div><label style={al}>Nieuw wachtwoord</label><input style={ai} type="password" placeholder="Laat leeg = ongewijzigd" value={acc._newPw||""} onChange={e=>upd(`accounts.${ai_}._newPw`,e.target.value)}/></div>
-            </div>
-            <div><label style={al}>Rol</label>
-              <select style={{...ai,width:"50%"}} value={acc.role} onChange={e=>upd(`accounts.${ai_}.role`,e.target.value)}>
-                <option value="worker">Medewerker</option>
-                <option value="manager">Manager</option>
-              </select>
+            <div className="admin-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:6}}>
+              <div><label className="lbl-responsive" style={al}>Naam</label><input style={ai} value={acc.username} onChange={e=>upd(`accounts.${ai_}.username`,e.target.value)}/></div>
+              <div><label className="lbl-responsive" style={al}>Nieuw wachtwoord</label><input style={ai} type="password" placeholder="Laat leeg = ongewijzigd" value={acc._newPw||""} onChange={e=>upd(`accounts.${ai_}._newPw`,e.target.value)}/></div>
+              <div><label className="lbl-responsive" style={al}>Rol</label>
+                <select style={{...ai,width:"100%"}} value={acc.role} onChange={e=>upd(`accounts.${ai_}.role`,e.target.value)}>
+                  <option value="worker">Medewerker</option>
+                  <option value="manager">Manager</option>
+                </select>
+              </div>
             </div>
           </div>)}
           <button style={{...S.btn,width:"100%",background:"transparent",border:"1.5px dashed #3D2A7A",color:"#7C5CBF",fontSize:12,marginBottom:10,padding:9}} onClick={()=>setLocal(p=>({...p,accounts:[...(p.accounts||[]),{id:Date.now(),username:"Nieuw persoon",password:"wachtwoord",role:"worker",active:true}]}))}>+ Account</button>
@@ -1044,11 +1057,11 @@ function AdminPanel({cfg,onSave}){
         </div>}
         {tab==="instellingen"&&<div>
           <div style={ac}>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
-              <div><label style={al}>App naam</label><input style={ai} value={local.appName} onChange={e=>upd("appName",e.target.value)}/></div>
-              <div><label style={al}>Locatie</label><input style={ai} value={local.location} onChange={e=>upd("location",e.target.value)}/></div>
+            <div className="admin-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
+              <div><label className="lbl-responsive" style={al}>App naam</label><input style={ai} value={local.appName} onChange={e=>upd("appName",e.target.value)}/></div>
+              <div><label className="lbl-responsive" style={al}>Locatie</label><input style={ai} value={local.location} onChange={e=>upd("location",e.target.value)}/></div>
+              <div><label className="lbl-responsive" style={al}>Nieuwe PIN (4 cijfers)</label><input style={{...ai,width:"100%"}} type="password" placeholder="Laat leeg = ongewijzigd" value={local._newPin||""} onChange={e=>upd("_newPin",e.target.value.replace(/\D/g,"").slice(0,4))}/></div>
             </div>
-            <div><label style={al}>Nieuwe PIN (4 cijfers)</label><input style={{...ai,width:"50%"}} type="password" placeholder="Laat leeg = ongewijzigd" value={local._newPin||""} onChange={e=>upd("_newPin",e.target.value.replace(/\D/g,"").slice(0,4))}/></div>
           </div>
           <button style={sv} onClick={save}>{saved?"Opgeslagen!":"Opslaan"}</button>
         </div>}
