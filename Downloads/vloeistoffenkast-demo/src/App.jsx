@@ -378,7 +378,7 @@ export default function App() {
           {/* Rolknoppen */}
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,width:"100%",maxWidth:420}}>
             <div className="card-hover" onClick={()=>{setLoginRole("worker");setLoginErr("");}} style={{cursor:"pointer",background:"linear-gradient(160deg,#4DA035,#3D8B2E)",border:"3px solid #2D7020",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(61,139,46,0.28)"}}>
-              <div style={{fontSize:34,marginBottom:8}}>🧹</div>
+              <div style={{fontSize:34,marginBottom:8}}>👥</div>
               <div style={{fontSize:13,fontWeight:900,color:"#fff",lineHeight:1.2}}>{tr(lang,"worker")}</div>
               <div style={{fontSize:10,color:"rgba(255,255,255,0.75)",marginTop:4}}>{workerAccs.length} {workerAccs.length===1?tr(lang,"person"):tr(lang,"persons")}</div>
             </div>
@@ -405,7 +405,7 @@ export default function App() {
               <div style={{position:"absolute",top:"110%",left:"50%",transform:"translateX(-50%)",background:"#fff",border:"2px solid #C8E6B0",borderRadius:14,boxShadow:"0 8px 28px rgba(61,139,46,0.18)",zIndex:100,width:"min(260px,90vw)",overflow:"hidden"}}>
                 <button onClick={()=>{setShowManual("worker");setManualMenu(false);}}
                   style={{width:"100%",padding:"14px 18px",background:"none",border:"none",borderBottom:"1.5px solid #EEF9E6",fontFamily:"Nunito,Arial,sans-serif",fontSize:13,fontWeight:800,color:"#3D8B2E",cursor:"pointer",display:"flex",alignItems:"center",gap:10,textAlign:"left"}}>
-                  <span style={{fontSize:22}}>🧹</span>
+                  <span style={{fontSize:22}}>👥</span>
                   <div>
                     <div>Voor Medewerkers</div>
                     <div style={{fontSize:10,color:"#8AAA7A",fontWeight:600,marginTop:1}}>Voorraad bijwerken & inloggen</div>
@@ -436,7 +436,7 @@ export default function App() {
         <style>{GF}</style>
         <Hdr cfg={cfg} onBack={()=>{setLoginRole(null);setLoginErr("");}} backLabel="Terug"/>
         <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px",width:"100%"}}>
-          <div style={{marginBottom:6,fontSize:28}}>{loginRole==="worker"?"🧹":"📊"}</div>
+          <div style={{marginBottom:6,fontSize:28}}>{loginRole==="worker"?"👥":"📊"}</div>
           <div style={{fontSize:18,fontWeight:900,color:roleColor,marginBottom:20}}>{roleName} inloggen</div>
           <div style={{width:"100%",maxWidth:340}}>
             <AccountLoginPanel
@@ -749,7 +749,7 @@ function LoginCard({acc,onSuccess,onFail,hasErr,onClear,hideRole}){
   return(
     <div style={{background:hasErr?"#FDEDEA":"#fff",border:`2.5px solid ${hasErr?"#D44A2A":isLocked?"#D44A2A44":isMgr?"#E8632A55":"#C8E6B0"}`,borderRadius:18,padding:18,boxShadow:"0 4px 16px rgba(61,139,46,0.1)",overflow:"hidden"}}>
       {!hideRole&&<div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14,paddingBottom:12,borderBottom:`2px solid ${isMgr?"#E8632A22":"#EEF9E6"}`}}>
-        <span style={{fontSize:28}}>{isMgr?"📊":"🧹"}</span>
+        <span style={{fontSize:28}}>{isMgr?"📊":"👥"}</span>
         <div>
           <div style={{fontSize:15,fontWeight:900,color:isMgr?"#E8632A":"#3D8B2E"}}>{isMgr?"Manager":"Medewerker"}</div>
           <div style={{fontSize:11,fontWeight:700,color:isMgr?"#E8632A":"#3D8B2E",background:isMgr?"#FDF0EB":"#EEF9E6",border:`1.5px solid ${isMgr?"#E8632A44":"#C8E6B0"}`,borderRadius:20,padding:"2px 10px",display:"inline-block",marginTop:3}}>{acc.username}</div>
@@ -1036,7 +1036,7 @@ function AdminPanel({cfg,onSave}){
         {tab==="accounts"&&<div>
           {(local.accounts||[]).map((acc,ai_)=><div key={acc.id} style={ac}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
-              <span style={{fontSize:20}}>{acc.role==="manager"?"📊":"🧹"}</span>
+              <span style={{fontSize:20}}>{acc.role==="manager"?"📊":"👥"}</span>
               <div style={{flex:1}}><div style={{fontSize:12,fontWeight:800,color:"#C0B0E8"}}>{acc.username}</div></div>
               <button style={{background:"none",border:`1.5px solid ${acc.active?"#2A5A1A":"#5A1A1A"}`,color:acc.active?"#7FE060":"#CC6666",borderRadius:8,width:38,height:28,cursor:"pointer",fontSize:10,fontWeight:800}} onClick={()=>upd(`accounts.${ai_}.active`,!acc.active)}>{acc.active?"AAN":"UIT"}</button>
               <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.accounts.splice(ai_,1);setLocal(n);}}>×</button>
@@ -1327,7 +1327,7 @@ function ManualModal({type,lang="nl",onClose}){
         {/* Header */}
         <div style={{background:accent,padding:"14px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:10}}>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
-            <span style={{fontSize:22}}>{isWorker?"🧹":"📊"}</span>
+            <span style={{fontSize:22}}>{isWorker?"👥":"📊"}</span>
             <div>
               <div style={{fontSize:16,fontWeight:900,color:"#fff"}}>{L.title}</div>
               <div style={{fontSize:10,color:"rgba(255,255,255,0.75)"}}>{L.subtitle}</div>
@@ -1348,7 +1348,7 @@ function ManualModal({type,lang="nl",onClose}){
 
           {isWorker ? <>
             <Step n="1" icon="🔐" title={L.s1Title}>
-              <div>{L.s1a} <Badge color="#3D8B2E" bg="#EEF9E6">🧹 {tr(lang,"worker")}</Badge> {L.s1b}</div>
+              <div>{L.s1a} <Badge color="#3D8B2E" bg="#EEF9E6">👥 {tr(lang,"worker")}</Badge> {L.s1b}</div>
               <div style={{marginTop:6}}>{L.s1c}</div>
               <Tip icon="💡" bg="#F0FAE8" border="#C8E6B0">{L.s1tip}</Tip>
             </Step>
