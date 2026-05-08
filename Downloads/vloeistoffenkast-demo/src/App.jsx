@@ -336,33 +336,34 @@ export default function App() {
           <div style={{fontSize:11,color:"#8AAA7A",letterSpacing:2,textTransform:"uppercase",marginBottom:18,fontWeight:700}}>{cfg.location}</div>
 
           {/* Taalkeuze */}
-          <div style={{marginBottom:28}}>
+          <div style={{marginBottom:28,position:"relative",display:"inline-block"}}>
             <select
               value={lang}
               onChange={e=>setLang(e.target.value)}
-              style={{background:"#fff",border:"2px solid #C8E6B0",borderRadius:20,padding:"8px 16px",fontFamily:"Nunito,Arial,sans-serif",fontSize:13,fontWeight:700,color:"#3D8B2E",cursor:"pointer",outline:"none",appearance:"none",WebkitAppearance:"none",textAlign:"center"}}>
+              style={{background:"#fff",border:"2px solid #C8E6B0",borderRadius:20,padding:"10px 40px 10px 18px",fontFamily:"Nunito,Arial,sans-serif",fontSize:13,fontWeight:700,color:"#3D8B2E",cursor:"pointer",outline:"none",appearance:"none",WebkitAppearance:"none",minWidth:160}}>
               <option value="nl">🇳🇱 Nederlands</option>
               <option value="en">🇬🇧 English</option>
               <option value="ar">🇸🇦 العربية</option>
             </select>
+            <span style={{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",color:"#3D8B2E",fontSize:12}}>▼</span>
           </div>
 
           {/* Rolknoppen */}
-          <div style={{display:"flex",gap:16,width:"100%",maxWidth:460,justifyContent:"center",flexWrap:"wrap"}}>
-            <div onClick={()=>{setLoginRole("worker");setLoginErr("");}} style={{flex:"1 1 120px",maxWidth:148,cursor:"pointer",background:"linear-gradient(160deg,#4DA035,#3D8B2E)",border:"3px solid #2D7020",borderRadius:20,padding:"28px 12px",textAlign:"center",boxShadow:"0 8px 28px rgba(61,139,46,0.30)"}}>
-              <div style={{fontSize:40,marginBottom:10}}>🧹</div>
-              <div style={{fontSize:16,fontWeight:900,color:"#fff",letterSpacing:0.5}}>{tr(lang,"worker")}</div>
-              <div style={{fontSize:11,color:"rgba(255,255,255,0.75)",marginTop:5}}>{workerAccs.length} {workerAccs.length===1?tr(lang,"person"):tr(lang,"persons")}</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,width:"100%",maxWidth:420}}>
+            <div onClick={()=>{setLoginRole("worker");setLoginErr("");}} style={{cursor:"pointer",background:"linear-gradient(160deg,#4DA035,#3D8B2E)",border:"3px solid #2D7020",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(61,139,46,0.28)"}}>
+              <div style={{fontSize:34,marginBottom:8}}>🧹</div>
+              <div style={{fontSize:13,fontWeight:900,color:"#fff",lineHeight:1.2}}>{tr(lang,"worker")}</div>
+              <div style={{fontSize:10,color:"rgba(255,255,255,0.75)",marginTop:4}}>{workerAccs.length} {workerAccs.length===1?tr(lang,"person"):tr(lang,"persons")}</div>
             </div>
-            <div onClick={()=>{setLoginRole("manager");setLoginErr("");}} style={{flex:"1 1 120px",maxWidth:148,cursor:"pointer",background:"linear-gradient(160deg,#E8632A,#C44820)",border:"3px solid #A03010",borderRadius:20,padding:"28px 12px",textAlign:"center",boxShadow:"0 8px 28px rgba(232,99,42,0.30)"}}>
-              <div style={{fontSize:40,marginBottom:10}}>📊</div>
-              <div style={{fontSize:16,fontWeight:900,color:"#fff",letterSpacing:0.5}}>{tr(lang,"manager")}</div>
-              <div style={{fontSize:11,color:"rgba(255,255,255,0.75)",marginTop:5}}>{managerAccs.length} {managerAccs.length===1?tr(lang,"person"):tr(lang,"persons")}</div>
+            <div onClick={()=>{setLoginRole("manager");setLoginErr("");}} style={{cursor:"pointer",background:"linear-gradient(160deg,#E8632A,#C44820)",border:"3px solid #A03010",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(232,99,42,0.28)"}}>
+              <div style={{fontSize:34,marginBottom:8}}>📊</div>
+              <div style={{fontSize:13,fontWeight:900,color:"#fff",lineHeight:1.2}}>{tr(lang,"manager")}</div>
+              <div style={{fontSize:11,color:"rgba(255,255,255,0.75)",marginTop:4}}>{managerAccs.length} {managerAccs.length===1?tr(lang,"person"):tr(lang,"persons")}</div>
             </div>
-            <div onClick={()=>setShowAdmin(true)} style={{flex:"1 1 120px",maxWidth:148,cursor:"pointer",background:"linear-gradient(160deg,#6A4ABF,#5A3A9F)",border:"3px solid #4A2A8F",borderRadius:20,padding:"28px 12px",textAlign:"center",boxShadow:"0 8px 28px rgba(106,74,191,0.30)"}}>
-              <div style={{fontSize:40,marginBottom:10}}>🔧</div>
-              <div style={{fontSize:16,fontWeight:900,color:"#fff",letterSpacing:0.5}}>{tr(lang,"admin")}</div>
-              <div style={{fontSize:11,color:"rgba(255,255,255,0.75)",marginTop:5}}>{tr(lang,"pinRequired")}</div>
+            <div onClick={()=>setShowAdmin(true)} style={{cursor:"pointer",background:"linear-gradient(160deg,#6A4ABF,#5A3A9F)",border:"3px solid #4A2A8F",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(106,74,191,0.28)"}}>
+              <div style={{fontSize:34,marginBottom:8}}>🔧</div>
+              <div style={{fontSize:13,fontWeight:900,color:"#fff",lineHeight:1.2}}>{tr(lang,"admin")}</div>
+              <div style={{fontSize:11,color:"rgba(255,255,255,0.75)",marginTop:4}}>{tr(lang,"pinRequired")}</div>
             </div>
           </div>
 
@@ -374,7 +375,7 @@ export default function App() {
               <span style={{fontSize:18}}>📖</span> Handleiding <span style={{fontSize:11,opacity:0.6}}>{manualMenu?"▲":"▼"}</span>
             </button>
             {manualMenu&&(
-              <div style={{position:"absolute",top:"110%",left:"50%",transform:"translateX(-50%)",background:"#fff",border:"2px solid #C8E6B0",borderRadius:14,boxShadow:"0 8px 28px rgba(61,139,46,0.18)",zIndex:100,minWidth:220,overflow:"hidden"}}>
+              <div style={{position:"absolute",top:"110%",left:"50%",transform:"translateX(-50%)",background:"#fff",border:"2px solid #C8E6B0",borderRadius:14,boxShadow:"0 8px 28px rgba(61,139,46,0.18)",zIndex:100,width:"min(260px,90vw)",overflow:"hidden"}}>
                 <button onClick={()=>{setShowManual("worker");setManualMenu(false);}}
                   style={{width:"100%",padding:"14px 18px",background:"none",border:"none",borderBottom:"1.5px solid #EEF9E6",fontFamily:"Nunito,Arial,sans-serif",fontSize:13,fontWeight:800,color:"#3D8B2E",cursor:"pointer",display:"flex",alignItems:"center",gap:10,textAlign:"left"}}>
                   <span style={{fontSize:22}}>🧹</span>
@@ -660,7 +661,7 @@ function Hdr({cfg,role,isAdmin,onBack,backLabel,onSwitch,userName,lang="nl"}){
         <div style={{fontSize:9,color:"rgba(255,255,255,0.6)",whiteSpace:"nowrap"}}>{cfg?.location||""}</div>
       </div>
       <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
-        {userName&&<div style={{fontSize:10,fontWeight:800,color:"#fff",whiteSpace:"nowrap"}}>{userName}</div>}
+        {userName&&<div style={{fontSize:10,fontWeight:800,color:"#fff",whiteSpace:"nowrap",maxWidth:100,overflow:"hidden",textOverflow:"ellipsis"}}>{userName}</div>}
         {role&&<div style={{fontSize:9,fontWeight:700,color:"rgba(255,255,255,0.85)",padding:"4px 8px",border:"1.5px solid rgba(255,255,255,0.3)",borderRadius:20,background:"rgba(255,255,255,0.12)",textTransform:"uppercase",whiteSpace:"nowrap"}}>{roleLabel}</div>}
         {onBack&&<button style={{background:"rgba(255,255,255,0.15)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontFamily:"Nunito,Arial,sans-serif",fontSize:11,fontWeight:700,padding:"5px 11px",borderRadius:20,cursor:"pointer",whiteSpace:"nowrap"}} onClick={onBack}>{backLabel||tr(lang,"back")}</button>}
         {!onBack&&role&&onSwitch&&<button style={{background:"rgba(255,255,255,0.15)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontFamily:"Nunito,Arial,sans-serif",fontSize:11,fontWeight:700,padding:"5px 11px",borderRadius:20,cursor:"pointer",whiteSpace:"nowrap"}} onClick={onSwitch}>{tr(lang,"logout")}</button>}
@@ -678,11 +679,14 @@ function AccountLoginPanel({accounts,onSuccess,onFail,loginErr,onClear,roleColor
       {accounts.length>1&&(
         <div style={{marginBottom:14}}>
           <label style={S.lbl}>Selecteer je naam</label>
-          <select style={{...S.inp,width:"100%",borderColor:roleColor+"66"}}
-            value={selectedId}
-            onChange={e=>{setSelectedId(Number(e.target.value));onClear();}}>
-            {accounts.map(a=><option key={a.id} value={a.id}>{a.username}</option>)}
-          </select>
+          <div style={{position:"relative"}}>
+            <select style={{...S.inp,width:"100%",borderColor:roleColor+"66",paddingRight:36,appearance:"none",WebkitAppearance:"none"}}
+              value={selectedId}
+              onChange={e=>{setSelectedId(Number(e.target.value));onClear();}}>
+              {accounts.map(a=><option key={a.id} value={a.id}>{a.username}</option>)}
+            </select>
+            <span style={{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",color:"#8AAA7A",fontSize:11}}>▼</span>
+          </div>
         </div>
       )}
       <LoginCard key={acc.id} acc={acc} onSuccess={()=>onSuccess(acc)} onFail={()=>onFail(acc.id)} hasErr={loginErr===acc.id} onClear={onClear} hideRole/>
@@ -734,7 +738,7 @@ function LoginCard({acc,onSuccess,onFail,hasErr,onClear,hideRole}){
           disabled={isLocked}
           onChange={e=>{setPass(e.target.value);if(hasErr)onClear();}}
           onKeyDown={e=>e.key==="Enter"&&tryLogin()}/>
-        <button style={{position:"absolute",right:12,top:"40%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",fontSize:14,color:"#8AAA7A"}} onClick={()=>setShowPw(p=>!p)}>{showPw?"🙈":"👁"}</button>
+        <button style={{position:"absolute",insetInlineEnd:8,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",fontSize:18,color:"#8AAA7A",padding:"8px",lineHeight:1}} onClick={()=>setShowPw(p=>!p)}>{showPw?"🙈":"👁"}</button>
       </div>
       <button style={{...S.btn,width:"100%",background:isLocked?"#ccc":isMgr?"linear-gradient(135deg,#E8632A,#D44A20)":"linear-gradient(135deg,#3D8B2E,#5AAE3C)",color:"#fff",letterSpacing:1,textTransform:"uppercase",cursor:isLocked?"not-allowed":"pointer"}} onClick={tryLogin} disabled={isLocked}>
         {isLocked?"Geblokkeerd...":isMgr?"Manager inloggen":"Medewerker inloggen"}
@@ -830,7 +834,7 @@ function ShelfDetail({shelf,inv,onUpdate,cfg,onAudit,lang="nl"}){
           </div>
         );
       })}
-      <button style={{width:"100%",padding:11,background:"#FDEDEA",border:"2px solid #C8E6B0",color:"#D44A2A",fontFamily:"Nunito,Arial,sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,borderRadius:14,cursor:"pointer",textTransform:"uppercase",marginTop:4,marginBottom:20}} onClick={()=>{aPr(shelf).forEach(p=>{onUpdate(p.id,"full",0);onUpdate(p.id,"partial",0);});onAudit?.(`${shelf.label} leeg gemeld`)}}>
+      <button style={{width:"100%",padding:13,background:"#FDEDEA",border:"2px solid #D44A2A55",color:"#D44A2A",fontFamily:"Nunito,Arial,sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,borderRadius:14,cursor:"pointer",textTransform:"uppercase",marginTop:4,marginBottom:20}} onClick={()=>{aPr(shelf).forEach(p=>{onUpdate(p.id,"full",0);onUpdate(p.id,"partial",0);});onAudit?.(`${shelf.label} leeg gemeld`)}}>
         {tr(lang,"reportEmpty")}
       </button>
     </div>
@@ -894,7 +898,7 @@ function ConsumptionView({inv,snaps,setSnaps,onSnap,cfg}){
           {snaps.map(snap=>(
             <div key={snap.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid #EEF9E6"}}>
               <div><div style={{fontSize:13,fontWeight:700,color:"#4A6A3A"}}>{snap.label}</div><div style={{fontSize:10,color:"#8AAA7A",marginTop:1}}>{new Date(snap.date).toLocaleDateString("nl-NL",{day:"2-digit",month:"short"})}</div></div>
-              <button style={{background:"#FDEDEA",border:"none",color:"#D44A2A",borderRadius:7,width:28,height:28,cursor:"pointer",fontSize:13}} onClick={()=>{const n=snaps.filter(s=>s.id!==snap.id);setSnaps(n);dbSet("vkast-snap",n);}}>×</button>
+              <button style={{background:"#FDEDEA",border:"none",color:"#D44A2A",borderRadius:7,width:36,height:36,cursor:"pointer",fontSize:15}} onClick={()=>{const n=snaps.filter(s=>s.id!==snap.id);setSnaps(n);dbSet("vkast-snap",n);}}>×</button>
             </div>
           ))}
         </div>
@@ -934,8 +938,8 @@ function AdminPanel({cfg,onSave}){
   const sv={...S.btn,width:"100%",background:"linear-gradient(135deg,#7C5CBF,#5A3A9F)",color:"#fff",letterSpacing:1};
   return(
     <div style={{width:"100%"}}>
-      <div style={{display:"flex",flexWrap:"wrap",gap:6,width:"100%",maxWidth:460,padding:"12px 14px 0",margin:"0 auto"}}>
-        {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{flex:"1 1 60px",minWidth:60,padding:"9px 6px",border:`2px solid ${tab===t.id?"#7C5CBF":"#3D2A7A"}`,borderRadius:10,background:tab===t.id?"#7C5CBF":"#16213E",color:tab===t.id?"#fff":"#9B8EC4",fontFamily:"Nunito,sans-serif",fontSize:10,fontWeight:800,cursor:"pointer"}}>{t.l}</button>)}
+      <div style={{display:"flex",overflowX:"auto",gap:6,width:"100%",maxWidth:460,padding:"12px 14px 0",margin:"0 auto",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}}>
+        {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{flexShrink:0,padding:"9px 10px",border:`2px solid ${tab===t.id?"#7C5CBF":"#3D2A7A"}`,borderRadius:10,background:tab===t.id?"#7C5CBF":"#16213E",color:tab===t.id?"#fff":"#9B8EC4",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer",whiteSpace:"nowrap"}}>{t.l}</button>)}
       </div>
       <div style={{width:"100%",maxWidth:460,padding:"14px 14px 0",margin:"0 auto"}}>
         {tab==="lekbakken"&&<div>
@@ -962,7 +966,7 @@ function AdminPanel({cfg,onSave}){
               <input style={ai} value={p.name} onChange={e=>upd(`shelves.${si}.products.${pi}.name`,e.target.value)}/>
               <input style={{...ai,textAlign:"center"}} type="number" value={p.vol} min={0.1} step={0.25} onChange={e=>upd(`shelves.${si}.products.${pi}.vol`,parseFloat(e.target.value)||0.5)}/>
               <input style={{...ai,textAlign:"center"}} type="number" value={p.target} min={1} onChange={e=>upd(`shelves.${si}.products.${pi}.target`,parseInt(e.target.value)||1)}/>
-              <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:28,height:28,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.shelves[si].products.splice(pi,1);setLocal(n);}}>×</button>
+              <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.shelves[si].products.splice(pi,1);setLocal(n);}}>×</button>
             </div>)}
             <button style={{...S.btn,width:"100%",background:"transparent",border:"1.5px dashed #3D2A7A",color:"#7C5CBF",fontSize:11,marginTop:8,padding:8}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.shelves[si].products.push({id:`${sh.id}-${Date.now()}`,name:"Nieuw product",vol:1.0,target:3});setLocal(n);}}>+ Product</button>
           </div>)}
@@ -993,7 +997,7 @@ function AdminPanel({cfg,onSave}){
             {local.emails.map((em,ei)=><div key={em.id} style={{display:"flex",gap:6,marginBottom:8,alignItems:"center"}}>
               <input style={{...ai,width:80}} value={em.dept} onChange={e=>upd(`emails.${ei}.dept`,e.target.value)}/>
               <input style={{...ai,flex:1}} value={em.email} type="email" onChange={e=>upd(`emails.${ei}.email`,e.target.value)}/>
-              <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:28,height:28,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.emails.splice(ei,1);setLocal(n);}}>×</button>
+              <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.emails.splice(ei,1);setLocal(n);}}>×</button>
             </div>)}
             <button style={{...S.btn,width:"100%",background:"transparent",border:"1.5px dashed #3D2A7A",color:"#7C5CBF",fontSize:12,padding:9,marginTop:4}} onClick={()=>setLocal(p=>({...p,emails:[...p.emails,{id:Date.now(),dept:"Afdeling",email:"",active:true}]}))}>+ Ontvanger</button>
           </div>
@@ -1005,7 +1009,7 @@ function AdminPanel({cfg,onSave}){
               <span style={{fontSize:20}}>{acc.role==="manager"?"📊":"🧹"}</span>
               <div style={{flex:1}}><div style={{fontSize:12,fontWeight:800,color:"#C0B0E8"}}>{acc.username}</div></div>
               <button style={{background:"none",border:`1.5px solid ${acc.active?"#2A5A1A":"#5A1A1A"}`,color:acc.active?"#7FE060":"#CC6666",borderRadius:8,width:38,height:28,cursor:"pointer",fontSize:10,fontWeight:800}} onClick={()=>upd(`accounts.${ai_}.active`,!acc.active)}>{acc.active?"AAN":"UIT"}</button>
-              <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:28,height:28,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.accounts.splice(ai_,1);setLocal(n);}}>×</button>
+              <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.accounts.splice(ai_,1);setLocal(n);}}>×</button>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:6}}>
               <div><label style={al}>Naam</label><input style={ai} value={acc.username} onChange={e=>upd(`accounts.${ai_}.username`,e.target.value)}/></div>
@@ -1166,7 +1170,7 @@ function VoorraadView({cfg,inv,onUpdate,onAudit,lang="nl"}){
         );
       })}
 
-      <button style={{width:"100%",padding:11,background:"#EBF3FD",border:"2px solid #90B8E8",color:"#2D5FA0",fontFamily:"Nunito,Arial,sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,borderRadius:14,cursor:"pointer",textTransform:"uppercase",marginTop:4,marginBottom:20}}
+      <button style={{width:"100%",padding:13,background:"#FDEDEA",border:"2px solid #D44A2A55",color:"#D44A2A",fontFamily:"Nunito,Arial,sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,borderRadius:14,cursor:"pointer",textTransform:"uppercase",marginTop:4,marginBottom:20}}
         onClick={()=>{products.forEach(p=>onUpdate(p.id,"count",0));onAudit?.("Normale voorraad leeg gemeld")}}>
         {tr(lang,"reportStockEmpty")}
       </button>
@@ -1299,7 +1303,7 @@ function ManualModal({type,lang="nl",onClose}){
               <div style={{fontSize:10,color:"rgba(255,255,255,0.75)"}}>{L.subtitle}</div>
             </div>
           </div>
-          <button onClick={onClose} style={{background:"rgba(255,255,255,0.2)",border:"1.5px solid rgba(255,255,255,0.4)",color:"#fff",fontSize:18,width:36,height:36,borderRadius:10,cursor:"pointer",fontWeight:700}}>×</button>
+          <button onClick={onClose} style={{background:"rgba(255,255,255,0.2)",border:"1.5px solid rgba(255,255,255,0.4)",color:"#fff",fontSize:20,width:44,height:44,borderRadius:12,cursor:"pointer",fontWeight:700,flexShrink:0}}>×</button>
         </div>
 
         <div dir={lang==="ar"?"rtl":"ltr"} style={{flex:1,padding:"20px 18px 40px",fontFamily:"Nunito,Arial,sans-serif",background:"#F8FDF4"}}>
