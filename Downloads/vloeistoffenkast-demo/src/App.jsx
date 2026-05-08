@@ -171,7 +171,24 @@ const S = {
 };
 const GF=`@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap');
 .mgr-grid{display:grid;grid-template-columns:1fr;gap:10px;}
-@media(min-width:600px){.mgr-grid{grid-template-columns:1fr 1fr;}}`;
+@media(min-width:600px){.mgr-grid{grid-template-columns:1fr 1fr;}}
+/* Fix 3 — Responsive containers */
+.resp-wide{width:100%;margin:0 auto;}
+@media(min-width:640px){
+  .resp-wide{max-width:760px!important;padding-left:20px!important;padding-right:20px!important;}
+  /* Fix 2 — Admin tabs: wrap op desktop i.p.v. scrollen */
+  .admin-tabs-bar{overflow-x:visible!important;flex-wrap:wrap!important;}
+  /* Fix 1 — Modals: floating dialog op desktop */
+  .modal-overlay{justify-content:center!important;padding:32px 16px!important;overflow-y:auto!important;align-items:flex-start!important;}
+  .modal-box{min-height:0!important;border-radius:20px!important;box-shadow:0 28px 64px rgba(0,0,0,0.5)!important;overflow:hidden!important;}
+}
+/* Fix 4 — Hover effecten (desktop) */
+.card-hover{transition:transform .15s ease,filter .15s ease;}
+.card-hover:hover{transform:translateY(-4px);filter:brightness(1.07);}
+.btn-hover{transition:opacity .12s ease,transform .12s ease;}
+.btn-hover:hover{opacity:.88;transform:translateY(-1px);}
+.login-card-hover{transition:box-shadow .15s ease,border-color .15s ease;}
+.login-card-hover:hover{box-shadow:0 8px 28px rgba(61,139,46,0.2)!important;}`;
 
 function HelloFreshLogo({size=32}){
   return(
@@ -350,17 +367,17 @@ export default function App() {
 
           {/* Rolknoppen */}
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,width:"100%",maxWidth:420}}>
-            <div onClick={()=>{setLoginRole("worker");setLoginErr("");}} style={{cursor:"pointer",background:"linear-gradient(160deg,#4DA035,#3D8B2E)",border:"3px solid #2D7020",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(61,139,46,0.28)"}}>
+            <div className="card-hover" onClick={()=>{setLoginRole("worker");setLoginErr("");}} style={{cursor:"pointer",background:"linear-gradient(160deg,#4DA035,#3D8B2E)",border:"3px solid #2D7020",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(61,139,46,0.28)"}}>
               <div style={{fontSize:34,marginBottom:8}}>🧹</div>
               <div style={{fontSize:13,fontWeight:900,color:"#fff",lineHeight:1.2}}>{tr(lang,"worker")}</div>
               <div style={{fontSize:10,color:"rgba(255,255,255,0.75)",marginTop:4}}>{workerAccs.length} {workerAccs.length===1?tr(lang,"person"):tr(lang,"persons")}</div>
             </div>
-            <div onClick={()=>{setLoginRole("manager");setLoginErr("");}} style={{cursor:"pointer",background:"linear-gradient(160deg,#E8632A,#C44820)",border:"3px solid #A03010",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(232,99,42,0.28)"}}>
+            <div className="card-hover" onClick={()=>{setLoginRole("manager");setLoginErr("");}} style={{cursor:"pointer",background:"linear-gradient(160deg,#E8632A,#C44820)",border:"3px solid #A03010",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(232,99,42,0.28)"}}>
               <div style={{fontSize:34,marginBottom:8}}>📊</div>
               <div style={{fontSize:13,fontWeight:900,color:"#fff",lineHeight:1.2}}>{tr(lang,"manager")}</div>
               <div style={{fontSize:11,color:"rgba(255,255,255,0.75)",marginTop:4}}>{managerAccs.length} {managerAccs.length===1?tr(lang,"person"):tr(lang,"persons")}</div>
             </div>
-            <div onClick={()=>setShowAdmin(true)} style={{cursor:"pointer",background:"linear-gradient(160deg,#6A4ABF,#5A3A9F)",border:"3px solid #4A2A8F",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(106,74,191,0.28)"}}>
+            <div className="card-hover" onClick={()=>setShowAdmin(true)} style={{cursor:"pointer",background:"linear-gradient(160deg,#6A4ABF,#5A3A9F)",border:"3px solid #4A2A8F",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(106,74,191,0.28)"}}>
               <div style={{fontSize:34,marginBottom:8}}>🔧</div>
               <div style={{fontSize:13,fontWeight:900,color:"#fff",lineHeight:1.2}}>{tr(lang,"admin")}</div>
               <div style={{fontSize:11,color:"rgba(255,255,255,0.75)",marginTop:4}}>{tr(lang,"pinRequired")}</div>
@@ -447,7 +464,7 @@ export default function App() {
       <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)",fontFamily:"Nunito,sans-serif",display:"flex",flexDirection:"column",alignItems:"center",paddingBottom:40}}>
         <style>{GF}</style>
         <Hdr cfg={cfg} role="manager" userName={currentUser} onBack={()=>{setRole(null);setCurrentUser(null);setLang("nl");}} backLabel={tr(lang,"logout")}/>
-        <div style={{display:"flex",gap:8,width:"100%",maxWidth:440,padding:"12px 14px 0",margin:"0 auto"}}>
+        <div className="resp-wide" style={{display:"flex",gap:8,width:"100%",maxWidth:440,padding:"12px 14px 0",margin:"0 auto"}}>
           {[["status","Status"],["verbruik","Verbruik"],["logboek","Logboek"]].map(([t,l])=>(
             <button key={t} onClick={()=>setMgrTab(t)}
               style={{flex:1,padding:"10px 6px",border:"2.5px solid",borderColor:mgrTab===t?"#3D8B2E":"#C8E6B0",borderRadius:12,background:mgrTab===t?"#3D8B2E":"#fff",color:mgrTab===t?"#fff":"#8AAA7A",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer"}}>
@@ -455,7 +472,7 @@ export default function App() {
             </button>
           ))}
         </div>
-        <div style={{width:"100%",maxWidth:440,padding:"14px 14px 0",margin:"0 auto"}}>
+        <div className="resp-wide" style={{width:"100%",maxWidth:440,padding:"14px 14px 0",margin:"0 auto"}}>
           {mgrTab==="status"&&(
             <div>
               <div style={{display:"flex",gap:10,marginBottom:14}}>
@@ -469,7 +486,7 @@ export default function App() {
                 </div>
               </div>
               {cfg.features.emailReports&&(
-                <button onClick={()=>setShowReport(true)}
+                <button className="btn-hover" onClick={()=>setShowReport(true)}
                   style={{width:"100%",padding:"16px 20px",background:"linear-gradient(135deg,#E8632A,#D44A20)",border:"none",borderRadius:16,color:"#fff",fontFamily:"Nunito,sans-serif",fontSize:15,fontWeight:900,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginBottom:16}}>
                   <span style={{fontSize:22}}>📧</span>
                   <div><div>Maandelijkse Uitdraai</div><div style={{fontSize:10,opacity:0.85,marginTop:2}}>Bestelrapport aanmaken</div></div>
@@ -590,7 +607,7 @@ export default function App() {
             {tr(lang,"chooseShelf")}
           </div>
           <div style={{display:"flex",gap:14,width:"100%",maxWidth:420,justifyContent:"center",flexWrap:"wrap"}}>
-            <div onClick={openCab} style={{flex:"1 1 160px",maxWidth:200,cursor:"pointer",background:"linear-gradient(160deg,#4DA035,#3D8B2E)",border:"3px solid #2D7020",borderRadius:16,padding:"20px 16px",textAlign:"center",boxShadow:"0 8px 28px rgba(61,139,46,0.25)"}}>
+            <div className="card-hover" onClick={openCab} style={{flex:"1 1 160px",maxWidth:200,cursor:"pointer",background:"linear-gradient(160deg,#4DA035,#3D8B2E)",border:"3px solid #2D7020",borderRadius:16,padding:"20px 16px",textAlign:"center",boxShadow:"0 8px 28px rgba(61,139,46,0.25)"}}>
               <div style={{marginBottom:8}}><HelloFreshLogo size={36}/></div>
               <div style={{fontSize:15,fontWeight:900,color:"#fff",letterSpacing:1}}>{tr(lang,"chemicals")}</div>
               <div style={{fontSize:9,color:"rgba(255,255,255,0.65)",marginTop:4,letterSpacing:1,textTransform:"uppercase"}}>{tr(lang,"flammables")}</div>
@@ -602,7 +619,7 @@ export default function App() {
                 );})}
               </div>
             </div>
-            <div onClick={()=>setScreen("voorraad")} style={{flex:"1 1 160px",maxWidth:200,cursor:"pointer",background:"linear-gradient(160deg,#4A80C4,#2D5FA0)",border:"3px solid #1E4A80",borderRadius:16,padding:"20px 16px",textAlign:"center",boxShadow:"0 8px 28px rgba(45,95,160,0.25)"}}>
+            <div className="card-hover" onClick={()=>setScreen("voorraad")} style={{flex:"1 1 160px",maxWidth:200,cursor:"pointer",background:"linear-gradient(160deg,#4A80C4,#2D5FA0)",border:"3px solid #1E4A80",borderRadius:16,padding:"20px 16px",textAlign:"center",boxShadow:"0 8px 28px rgba(45,95,160,0.25)"}}>
               <div style={{fontSize:36,marginBottom:8}}>📦</div>
               <div style={{fontSize:15,fontWeight:900,color:"#fff",letterSpacing:1}}>{tr(lang,"normalStock")}</div>
               <div style={{fontSize:9,color:"rgba(255,255,255,0.65)",marginTop:4,letterSpacing:1,textTransform:"uppercase"}}>{tr(lang,"consumables")}</div>
@@ -753,7 +770,7 @@ function Cabinet({shelves,inv,onSelect}){
       {shelves.map(sh=>{
         const pct=shP(sh,inv);const col=fCol(pct);
         return(
-          <div key={sh.id} style={{display:"flex",alignItems:"stretch",height:84,borderBottom:"3px solid #C8E6B0",position:"relative",cursor:"pointer"}} onClick={()=>onSelect(sh)}>
+          <div className="btn-hover" key={sh.id} style={{display:"flex",alignItems:"stretch",height:84,borderBottom:"3px solid #C8E6B0",position:"relative",cursor:"pointer"}} onClick={()=>onSelect(sh)}>
             <div style={{position:"absolute",bottom:0,left:0,right:0,height:`${pct}%`,background:col,opacity:0.25,transition:"height 0.8s"}}/>
             <div style={{position:"relative",zIndex:2,flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"8px 10px",gap:2}}>
               <div style={{fontSize:8,letterSpacing:2,color:"#8AAA7A",fontWeight:700,textTransform:"uppercase"}}>{sh.label}</div>
@@ -938,10 +955,10 @@ function AdminPanel({cfg,onSave}){
   const sv={...S.btn,width:"100%",background:"linear-gradient(135deg,#7C5CBF,#5A3A9F)",color:"#fff",letterSpacing:1};
   return(
     <div style={{width:"100%"}}>
-      <div style={{display:"flex",overflowX:"auto",gap:6,width:"100%",maxWidth:460,padding:"12px 14px 0",margin:"0 auto",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}}>
-        {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{flexShrink:0,padding:"9px 10px",border:`2px solid ${tab===t.id?"#7C5CBF":"#3D2A7A"}`,borderRadius:10,background:tab===t.id?"#7C5CBF":"#16213E",color:tab===t.id?"#fff":"#9B8EC4",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer",whiteSpace:"nowrap"}}>{t.l}</button>)}
+      <div className="admin-tabs-bar resp-wide" style={{display:"flex",overflowX:"auto",gap:6,width:"100%",maxWidth:460,padding:"12px 14px 0",margin:"0 auto",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}}>
+        {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} className="btn-hover" style={{flexShrink:0,padding:"9px 10px",border:`2px solid ${tab===t.id?"#7C5CBF":"#3D2A7A"}`,borderRadius:10,background:tab===t.id?"#7C5CBF":"#16213E",color:tab===t.id?"#fff":"#9B8EC4",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer",whiteSpace:"nowrap"}}>{t.l}</button>)}
       </div>
-      <div style={{width:"100%",maxWidth:460,padding:"14px 14px 0",margin:"0 auto"}}>
+      <div className="resp-wide" style={{width:"100%",maxWidth:460,padding:"14px 14px 0",margin:"0 auto"}}>
         {tab==="lekbakken"&&<div>
           {local.shelves.map((sh,si)=><div key={sh.id} style={ac}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
@@ -1067,8 +1084,8 @@ function ReportModal({cfg,inv,onClose}){
   lines.push(`TOTAAL TE BESTELLEN: ${total}`);
   const report=lines.join("\n");
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(30,90,15,0.55)",zIndex:500,display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto",backdropFilter:"blur(3px)"}}>
-      <div style={{width:"100%",maxWidth:480,minHeight:"100vh",display:"flex",flexDirection:"column"}}>
+    <div className="modal-overlay" style={{position:"fixed",inset:0,background:"rgba(30,90,15,0.55)",zIndex:500,display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
+      <div className="modal-box" style={{width:"100%",maxWidth:480,minHeight:"100vh",display:"flex",flexDirection:"column",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)"}}>
         <div style={{background:"#3D8B2E",padding:"13px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0}}>
           <div style={{fontSize:15,fontWeight:900,color:"#fff"}}>Maandelijkse Uitdraai</div>
           <button style={{background:"rgba(255,255,255,0.15)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontSize:16,width:36,height:36,borderRadius:10,cursor:"pointer",fontWeight:700}} onClick={onClose}>×</button>
@@ -1291,8 +1308,8 @@ function ManualModal({type,lang="nl",onClose}){
   );
 
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:600,display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
-      <div style={{width:"100%",maxWidth:500,minHeight:"100vh",display:"flex",flexDirection:"column",background:"#F8FDF4"}}>
+    <div className="modal-overlay" style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:600,display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
+      <div className="modal-box" style={{width:"100%",maxWidth:500,minHeight:"100vh",display:"flex",flexDirection:"column",background:"#F8FDF4"}}>
 
         {/* Header */}
         <div style={{background:accent,padding:"14px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:10}}>
