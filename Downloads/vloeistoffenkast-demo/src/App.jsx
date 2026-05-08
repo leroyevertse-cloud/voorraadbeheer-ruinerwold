@@ -428,7 +428,7 @@ export default function App() {
       </div>
     );
 
-    const roleAccs = loginRole==="worker" ? allAccs : managerAccs;
+    const roleAccs = loginRole==="worker" ? workerAccs : managerAccs;
     const roleColor = loginRole==="worker" ? "#3D8B2E" : "#E8632A";
     const roleName = loginRole==="worker" ? "Medewerker" : "Manager";
     return (
