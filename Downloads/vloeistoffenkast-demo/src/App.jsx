@@ -180,7 +180,7 @@ const GF=`@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;
   .admin-tabs-bar{overflow-x:visible!important;flex-wrap:wrap!important;}
   /* Fix 1 — Modals: floating dialog op desktop */
   .modal-overlay{justify-content:center!important;padding:32px 16px!important;overflow-y:auto!important;align-items:flex-start!important;}
-  .modal-box{min-height:0!important;border-radius:20px!important;box-shadow:0 28px 64px rgba(0,0,0,0.5)!important;overflow:hidden!important;}
+  .modal-box{min-height:0!important;border-radius:20px!important;box-shadow:0 28px 64px rgba(0,0,0,0.5)!important;overflow-y:auto!important;max-height:90vh!important;}
 }
 /* Fix 5 — Grotere labels op desktop */
 @media(min-width:640px){
