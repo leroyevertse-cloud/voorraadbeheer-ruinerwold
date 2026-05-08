@@ -54,7 +54,28 @@ const TRANS = {
     bottles:"flessen", bottlesSingle:"fles", max:"max", pieces:"stuks",
     ofTarget:(done,total)=>`${done} van ${total} producten op doelstelling`,
     flammable:"Ontvlambaar", corrosive:"Corrosief",
-    langLabel:"🇳🇱 NL",
+    persons:"personen", person:"persoon", pinRequired:"PIN vereist",
+    langLabel:"🇳🇱 Nederlands",
+  },
+  en: {
+    welcome:"Welcome", chooseShelf:"Choose a cabinet", chooseSection:"Choose a tray",
+    chemicals:"Chemical Cabinet", flammables:"Flammable substances",
+    normalStock:"Normal Stock", consumables:"Consumables",
+    worker:"Employee", manager:"Manager", admin:"Administrator",
+    logout:"Log out", back:"Back", close:"Close",
+    password:"Password", enterPw:"Enter password",
+    wrongPw:"Incorrect password", blockedMsg:"Blocked — wait 30 seconds", blockedBtn:"Blocked...",
+    loginWorker:"Employee login", loginManager:"Manager login",
+    full:"full", none:"--",
+    maxExceeded:"Maximum exceeded!", almostFull:"Almost full — check before refilling",
+    toOrder:"to order", inStock:"in stock", present:"present",
+    reportEmpty:"Report tray empty", reportStockEmpty:"Report stock empty",
+    sectionFill:"Tray occupancy", per:"per", reorder:"reorder",
+    bottles:"bottles", bottlesSingle:"bottle", max:"max", pieces:"pieces",
+    ofTarget:(done,total)=>`${done} of ${total} products at target`,
+    flammable:"Flammable", corrosive:"Corrosive",
+    persons:"persons", person:"person", pinRequired:"PIN required",
+    langLabel:"🇬🇧 English",
   },
   ar: {
     welcome:"مرحباً", chooseShelf:"اختر خزانة", chooseSection:"اختر صينية التسرب",
@@ -73,7 +94,8 @@ const TRANS = {
     bottles:"قطع", bottlesSingle:"قطعة", max:"حد أقصى", pieces:"قطع",
     ofTarget:(done,total)=>`${done} من ${total} منتجات عند الهدف`,
     flammable:"قابل للاشتعال", corrosive:"آكل",
-    langLabel:"🇸🇦 AR",
+    persons:"أشخاص", person:"شخص", pinRequired:"يتطلب رمز PIN",
+    langLabel:"🇸🇦 العربية",
   },
 };
 const tr = (lang, key, ...args) => {
@@ -86,8 +108,8 @@ const DEF = {
   adminPin: "9999", checkAlertDays: 14, shelfAlertPct: 80,
   features: { consumptionTracking: true, emailReports: true, partialBottles: true },
   accounts: [
-    { id:1, username:"Medewerker 1", password:"123456", role:"worker",  active:true, lang:"nl" },
-    { id:2, username:"Manager",      password:"654321", role:"manager", active:true, lang:"nl" },
+    { id:1, username:"Medewerker 1", password:"123456", role:"worker",  active:true },
+    { id:2, username:"Manager",      password:"654321", role:"manager", active:true },
   ],
   emails: [
     { id:1, dept:"Inkoop",     email:"inkoop@bedrijf.nl",     active:true },
@@ -170,6 +192,8 @@ export default function App() {
   // "home" | "open" | "shelf-N" | "voorraad"
   const [loginErr,setLoginErr] = useState("");
   const [loginRole,setLoginRole] = useState(null);
+  const [showManual,setShowManual] = useState(null);
+  const [manualMenu,setManualMenu] = useState(false);
   const [adminPin,setAdminPin] = useState("");
   const [adminErr,setAdminErr] = useState(false);
   const [showAdmin,setShowAdmin] = useState(false);
@@ -303,36 +327,80 @@ export default function App() {
     const managerAccs=allAccs.filter(a=>a.role==="manager");
 
     if (!loginRole) return (
-      <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)",fontFamily:"Nunito,sans-serif",display:"flex",flexDirection:"column",alignItems:"center"}}>
+      <div dir={lang==="ar"?"rtl":"ltr"} style={{minHeight:"100vh",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)",fontFamily:"Nunito,Arial,sans-serif",display:"flex",flexDirection:"column",alignItems:"center"}}>
         <style>{GF}</style>
         <Hdr cfg={cfg}/>
         <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px",width:"100%"}}>
-          <div style={{marginBottom:8}}><HelloFreshLogo size={52}/></div>
-          <div style={{fontSize:26,fontWeight:900,color:"#3D8B2E",marginBottom:4}}>Welkom</div>
-          <div style={{fontSize:11,color:"#8AAA7A",letterSpacing:2,textTransform:"uppercase",marginBottom:28,fontWeight:700}}>{cfg.location}</div>
-          <div style={{display:"flex",gap:12,width:"100%",maxWidth:420,justifyContent:"center",flexWrap:"wrap"}}>
-            <div onClick={()=>{setLoginRole("worker");setLoginErr("");}} style={{flex:"1 1 110px",maxWidth:130,cursor:"pointer",background:"linear-gradient(160deg,#4DA035,#3D8B2E)",border:"3px solid #2D7020",borderRadius:18,padding:"22px 10px",textAlign:"center",boxShadow:"0 6px 22px rgba(61,139,46,0.28)"}}>
-              <div style={{fontSize:34,marginBottom:8}}>🧹</div>
-              <div style={{fontSize:14,fontWeight:900,color:"#fff",letterSpacing:0.5}}>Medewerker</div>
-              <div style={{fontSize:10,color:"rgba(255,255,255,0.7)",marginTop:4}}>{workerAccs.length} {workerAccs.length===1?"persoon":"personen"}</div>
+          <div style={{marginBottom:10}}><HelloFreshLogo size={56}/></div>
+          <div style={{fontSize:30,fontWeight:900,color:"#3D8B2E",marginBottom:4}}>{tr(lang,"welcome")}</div>
+          <div style={{fontSize:11,color:"#8AAA7A",letterSpacing:2,textTransform:"uppercase",marginBottom:18,fontWeight:700}}>{cfg.location}</div>
+
+          {/* Taalkeuze */}
+          <div style={{marginBottom:28}}>
+            <select
+              value={lang}
+              onChange={e=>setLang(e.target.value)}
+              style={{background:"#fff",border:"2px solid #C8E6B0",borderRadius:20,padding:"8px 16px",fontFamily:"Nunito,Arial,sans-serif",fontSize:13,fontWeight:700,color:"#3D8B2E",cursor:"pointer",outline:"none",appearance:"none",WebkitAppearance:"none",textAlign:"center"}}>
+              <option value="nl">🇳🇱 Nederlands</option>
+              <option value="en">🇬🇧 English</option>
+              <option value="ar">🇸🇦 العربية</option>
+            </select>
+          </div>
+
+          {/* Rolknoppen */}
+          <div style={{display:"flex",gap:16,width:"100%",maxWidth:460,justifyContent:"center",flexWrap:"wrap"}}>
+            <div onClick={()=>{setLoginRole("worker");setLoginErr("");}} style={{flex:"1 1 120px",maxWidth:148,cursor:"pointer",background:"linear-gradient(160deg,#4DA035,#3D8B2E)",border:"3px solid #2D7020",borderRadius:20,padding:"28px 12px",textAlign:"center",boxShadow:"0 8px 28px rgba(61,139,46,0.30)"}}>
+              <div style={{fontSize:40,marginBottom:10}}>🧹</div>
+              <div style={{fontSize:16,fontWeight:900,color:"#fff",letterSpacing:0.5}}>{tr(lang,"worker")}</div>
+              <div style={{fontSize:11,color:"rgba(255,255,255,0.75)",marginTop:5}}>{workerAccs.length} {workerAccs.length===1?tr(lang,"person"):tr(lang,"persons")}</div>
             </div>
-            <div onClick={()=>{setLoginRole("manager");setLoginErr("");}} style={{flex:"1 1 110px",maxWidth:130,cursor:"pointer",background:"linear-gradient(160deg,#E8632A,#C44820)",border:"3px solid #A03010",borderRadius:18,padding:"22px 10px",textAlign:"center",boxShadow:"0 6px 22px rgba(232,99,42,0.28)"}}>
-              <div style={{fontSize:34,marginBottom:8}}>📊</div>
-              <div style={{fontSize:14,fontWeight:900,color:"#fff",letterSpacing:0.5}}>Manager</div>
-              <div style={{fontSize:10,color:"rgba(255,255,255,0.7)",marginTop:4}}>{managerAccs.length} {managerAccs.length===1?"persoon":"personen"}</div>
+            <div onClick={()=>{setLoginRole("manager");setLoginErr("");}} style={{flex:"1 1 120px",maxWidth:148,cursor:"pointer",background:"linear-gradient(160deg,#E8632A,#C44820)",border:"3px solid #A03010",borderRadius:20,padding:"28px 12px",textAlign:"center",boxShadow:"0 8px 28px rgba(232,99,42,0.30)"}}>
+              <div style={{fontSize:40,marginBottom:10}}>📊</div>
+              <div style={{fontSize:16,fontWeight:900,color:"#fff",letterSpacing:0.5}}>{tr(lang,"manager")}</div>
+              <div style={{fontSize:11,color:"rgba(255,255,255,0.75)",marginTop:5}}>{managerAccs.length} {managerAccs.length===1?tr(lang,"person"):tr(lang,"persons")}</div>
             </div>
-            <div onClick={()=>setShowAdmin(true)} style={{flex:"1 1 110px",maxWidth:130,cursor:"pointer",background:"linear-gradient(160deg,#6A4ABF,#5A3A9F)",border:"3px solid #4A2A8F",borderRadius:18,padding:"22px 10px",textAlign:"center",boxShadow:"0 6px 22px rgba(106,74,191,0.28)"}}>
-              <div style={{fontSize:34,marginBottom:8}}>🔧</div>
-              <div style={{fontSize:14,fontWeight:900,color:"#fff",letterSpacing:0.5}}>Beheer</div>
-              <div style={{fontSize:10,color:"rgba(255,255,255,0.7)",marginTop:4}}>PIN vereist</div>
+            <div onClick={()=>setShowAdmin(true)} style={{flex:"1 1 120px",maxWidth:148,cursor:"pointer",background:"linear-gradient(160deg,#6A4ABF,#5A3A9F)",border:"3px solid #4A2A8F",borderRadius:20,padding:"28px 12px",textAlign:"center",boxShadow:"0 8px 28px rgba(106,74,191,0.30)"}}>
+              <div style={{fontSize:40,marginBottom:10}}>🔧</div>
+              <div style={{fontSize:16,fontWeight:900,color:"#fff",letterSpacing:0.5}}>{tr(lang,"admin")}</div>
+              <div style={{fontSize:11,color:"rgba(255,255,255,0.75)",marginTop:5}}>{tr(lang,"pinRequired")}</div>
             </div>
           </div>
+
+          {/* Handleiding knop */}
+          <div style={{marginTop:22,position:"relative"}}>
+            <button
+              onClick={()=>setManualMenu(m=>!m)}
+              style={{background:"#fff",border:"2.5px solid #C8E6B0",borderRadius:20,padding:"12px 28px",fontFamily:"Nunito,Arial,sans-serif",fontSize:14,fontWeight:800,color:"#3D8B2E",cursor:"pointer",display:"flex",alignItems:"center",gap:8,boxShadow:"0 3px 12px rgba(61,139,46,0.12)"}}>
+              <span style={{fontSize:18}}>📖</span> Handleiding <span style={{fontSize:11,opacity:0.6}}>{manualMenu?"▲":"▼"}</span>
+            </button>
+            {manualMenu&&(
+              <div style={{position:"absolute",top:"110%",left:"50%",transform:"translateX(-50%)",background:"#fff",border:"2px solid #C8E6B0",borderRadius:14,boxShadow:"0 8px 28px rgba(61,139,46,0.18)",zIndex:100,minWidth:220,overflow:"hidden"}}>
+                <button onClick={()=>{setShowManual("worker");setManualMenu(false);}}
+                  style={{width:"100%",padding:"14px 18px",background:"none",border:"none",borderBottom:"1.5px solid #EEF9E6",fontFamily:"Nunito,Arial,sans-serif",fontSize:13,fontWeight:800,color:"#3D8B2E",cursor:"pointer",display:"flex",alignItems:"center",gap:10,textAlign:"left"}}>
+                  <span style={{fontSize:22}}>🧹</span>
+                  <div>
+                    <div>Voor Medewerkers</div>
+                    <div style={{fontSize:10,color:"#8AAA7A",fontWeight:600,marginTop:1}}>Voorraad bijwerken & inloggen</div>
+                  </div>
+                </button>
+                <button onClick={()=>{setShowManual("manager");setManualMenu(false);}}
+                  style={{width:"100%",padding:"14px 18px",background:"none",border:"none",fontFamily:"Nunito,Arial,sans-serif",fontSize:13,fontWeight:800,color:"#E8632A",cursor:"pointer",display:"flex",alignItems:"center",gap:10,textAlign:"left"}}>
+                  <span style={{fontSize:22}}>📊</span>
+                  <div>
+                    <div>Voor Managers</div>
+                    <div style={{fontSize:10,color:"#8AAA7A",fontWeight:600,marginTop:1}}>Overzicht, rapportage & beheer</div>
+                  </div>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
+        {showManual&&<ManualModal type={showManual} lang={lang} onClose={()=>setShowManual(null)}/>}
         <Ftr/>
       </div>
     );
 
-    const roleAccs = loginRole==="worker" ? workerAccs : managerAccs;
+    const roleAccs = loginRole==="worker" ? allAccs : managerAccs;
     const roleColor = loginRole==="worker" ? "#3D8B2E" : "#E8632A";
     const roleName = loginRole==="worker" ? "Medewerker" : "Manager";
     return (
@@ -349,7 +417,7 @@ export default function App() {
               loginErr={loginErr}
               onClear={()=>setLoginErr("")}
               onFail={id=>setLoginErr(id)}
-              onSuccess={acc=>{setRole(acc.role);setCurrentUser(acc.username);setLang(acc.lang||"nl");}}
+              onSuccess={acc=>{setRole(acc.role);setCurrentUser(acc.username);}}
               roleColor={roleColor}
             />
           </div>
@@ -943,19 +1011,11 @@ function AdminPanel({cfg,onSave}){
               <div><label style={al}>Naam</label><input style={ai} value={acc.username} onChange={e=>upd(`accounts.${ai_}.username`,e.target.value)}/></div>
               <div><label style={al}>Nieuw wachtwoord</label><input style={ai} type="password" placeholder="Laat leeg = ongewijzigd" value={acc._newPw||""} onChange={e=>upd(`accounts.${ai_}._newPw`,e.target.value)}/></div>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
-              <div><label style={al}>Rol</label>
-                <select style={ai} value={acc.role} onChange={e=>upd(`accounts.${ai_}.role`,e.target.value)}>
-                  <option value="worker">Medewerker</option>
-                  <option value="manager">Manager</option>
-                </select>
-              </div>
-              <div><label style={al}>Taal</label>
-                <select style={ai} value={acc.lang||"nl"} onChange={e=>upd(`accounts.${ai_}.lang`,e.target.value)}>
-                  <option value="nl">🇳🇱 Nederlands</option>
-                  <option value="ar">🇸🇦 العربية</option>
-                </select>
-              </div>
+            <div><label style={al}>Rol</label>
+              <select style={{...ai,width:"50%"}} value={acc.role} onChange={e=>upd(`accounts.${ai_}.role`,e.target.value)}>
+                <option value="worker">Medewerker</option>
+                <option value="manager">Manager</option>
+              </select>
             </div>
           </div>)}
           <button style={{...S.btn,width:"100%",background:"transparent",border:"1.5px dashed #3D2A7A",color:"#7C5CBF",fontSize:12,marginBottom:10,padding:9}} onClick={()=>setLocal(p=>({...p,accounts:[...(p.accounts||[]),{id:Date.now(),username:"Nieuw persoon",password:"wachtwoord",role:"worker",active:true}]}))}>+ Account</button>
@@ -1110,6 +1170,304 @@ function VoorraadView({cfg,inv,onUpdate,onAudit,lang="nl"}){
         onClick={()=>{products.forEach(p=>onUpdate(p.id,"count",0));onAudit?.("Normale voorraad leeg gemeld")}}>
         {tr(lang,"reportStockEmpty")}
       </button>
+    </div>
+  );
+}
+
+const MANUAL_TRANS = {
+  nl:{
+    worker:{
+      title:"Handleiding Medewerker", subtitle:"Voorraadbeheer Ruinerwold",
+      goalTitle:"Doel van de app",
+      goalText:"Deze app helpt jou en je collega's om de vloeistoffenvoorraad en verbruiksartikelen bij te houden. Door de voorraad regelmatig bij te werken, weet de manager precies wat er besteld moet worden — zodat er nooit tekort is.",
+      s1Title:"Inloggen", s1a:"Tik op de groene", s1b:"knop op het startscherm.", s1c:"Kies jouw naam uit de dropdown lijst, voer je wachtwoord in en tik op \"Medewerker inloggen\".", s1tip:"Wachtwoord vergeten? Vraag dit na bij je manager of beheerder.",
+      s2Title:"Startscherm — kies een kast", s2intro:"Na het inloggen zie je twee opties:", s2chemName:"Vloeistoffenkast", s2chemDesc:"Gevaarlijke stoffen op liters", s2stockName:"Normale Voorraad", s2stockDesc:"Verbruiksartikelen op stuks", s2outro:"Tik op de kast die je wilt bijwerken.",
+      s3Title:"Vloeistoffenkast bijwerken", s3intro:"Kies een lekbak (1 t/m 4). Je ziet per lekbak het vulpercentage.", s3btns:"Tik op een product en gebruik de knoppen:", s3minus:"Fles verwijderen (bijv. leeg gebruikt)", s3plus:"Fles toevoegen (nieuwe fles geplaatst)", s3partial:"Gedeeltelijke fles? Selecteer het resterende percentage:", s3warn:"De knop \"Lekbak leeg melden\" zet alles op 0. Gebruik dit alleen als de lekbak echt leeg is.",
+      s4Title:"Normale Voorraad bijwerken", s4intro:"Je ziet een lijst van verbruiksartikelen (WC-papier, handschoenen, etc.).", s4btns:"Gebruik + en − om het werkelijke aantal in te voeren dat aanwezig is.", s4ok:"✓ Op voorraad", s4order:"+X Bijbestellen", s4empty:"Leeg!",
+      tipsTitle:"✅ Belangrijke tips",
+      tips:[["🕐","Werk de voorraad bij aan het begin of einde van je dienst"],["👀","Tel altijd de fysieke voorraad voordat je de app bijwerkt"],["🔄","Twijfel je over een hoeveelheid? Kijk nog een keer"],["💬","Bij problemen of vragen: meld dit bij je manager"]],
+    },
+    manager:{
+      title:"Handleiding Manager", subtitle:"Voorraadbeheer Ruinerwold",
+      goalTitle:"Doel van de app",
+      goalText:"Als manager heb je volledig overzicht over alle lekbakken en verbruiksartikelen. Je ziet direct wat er besteld moet worden, kunt maandelijkse bestelrapporten aanmaken en het activiteitenlogboek raadplegen.",
+      s1Title:"Inloggen als Manager", s1a:"Tik op de oranje", s1b:"knop op het startscherm.", s1c:"Kies jouw naam, voer je wachtwoord in en tik op \"Manager inloggen\".", s1tip:"Als manager kun je ook inloggen via de Medewerker knop om direct de voorraad bij te werken.",
+      s2Title:"Tab: Status — Overzicht", s2intro:"De Status tab toont een volledig overzicht van alle voorraden:", s2g:[["Te bestellen","Totaal producten dat bijbesteld moet worden"],["Lekbakken","Aantal actieve lekbakken en vulpercentage"]], s2badge:"Per product zie je:",  s2ok:"= op orde", s2order:"= bestellen",
+      s3Title:"Tab: Verbruik — Maandstand", s3intro:"Gebruik deze tab om het maandverbruik bij te houden.", s3wfTitle:"📸 Werkwijze:", s3wf:["Begin van de maand: tik op \"Maandstand vastleggen\"","De app slaat de huidige voorraadstand op","Aan het einde van de maand zie je het verbruik per product","Maximaal 12 maandstanden worden bewaard"],
+      s4Title:"Tab: Logboek — Activiteiten", s4intro:"Het logboek toont elke voorraadwijziging met naam, datum en tijdstip.", s4tip:"Handig voor controle: je ziet direct wie wat heeft gewijzigd en wanneer.",
+      s5Title:"Bestelrapport — Maandelijkse Uitdraai", s5intro:"Tik op de oranje \"Maandelijkse Uitdraai\" knop in de Status tab.", s5btns:[["📧","Verstuur per e-mail","Gaat naar ingestelde ontvangers"],["⧉","Kopieer tekst","Plak in WhatsApp of Teams"],["📄","Download PDF","Sla op als bestand"]],
+      s6Title:"Beheer — Masterfile (PIN)", s6intro:"Via de paarse Beheer knop op het startscherm (PIN vereist) kun je:", s6items:[["Lekbakken","Maximale liters en kleur aanpassen"],["Producten","Producten toevoegen, verwijderen of hernoemen"],["Voorraad","Verbruiksartikelen en doelstellingen beheren"],["Accounts","Medewerkers toevoegen, naam en wachtwoord wijzigen"],["E-mail","Ontvangers voor het bestelrapport instellen"]],
+      tipsTitle:"✅ Tips voor managers",
+      tips:[["📅","Leg de maandstand vast op de eerste werkdag van elke maand"],["📊","Controleer wekelijks de Status tab om bijtijds te bestellen"],["📋","Gebruik het logboek bij onduidelijkheden over de voorraad"],["🔒","Houd je PIN geheim — alleen jij en de beheerder hebben toegang"]],
+    },
+  },
+  en:{
+    worker:{
+      title:"Employee Manual", subtitle:"Inventory Management Ruinerwold",
+      goalTitle:"Purpose of the app",
+      goalText:"This app helps you and your colleagues keep track of the chemical cabinet and consumables inventory. By regularly updating the stock, the manager knows exactly what needs to be ordered — so there is never a shortage.",
+      s1Title:"Login", s1a:"Tap the green", s1b:"button on the start screen.", s1c:"Select your name from the dropdown list, enter your password and tap \"Employee login\".", s1tip:"Forgot your password? Ask your manager or administrator.",
+      s2Title:"Home screen — choose a cabinet", s2intro:"After logging in you see two options:", s2chemName:"Chemical Cabinet", s2chemDesc:"Hazardous substances in litres", s2stockName:"Normal Stock", s2stockDesc:"Consumables in units", s2outro:"Tap the cabinet you want to update.",
+      s3Title:"Update Chemical Cabinet", s3intro:"Choose a tray (1 to 4). You can see the fill percentage per tray.", s3btns:"Tap a product and use the buttons:", s3minus:"Remove bottle (e.g. used up)", s3plus:"Add bottle (new bottle placed)", s3partial:"Partial bottle? Select the remaining percentage:", s3warn:"The \"Report tray empty\" button sets everything to 0. Only use this if the tray is truly empty.",
+      s4Title:"Update Normal Stock", s4intro:"You see a list of consumables (toilet paper, gloves, etc.).", s4btns:"Use + and − to enter the actual quantity present.", s4ok:"✓ In stock", s4order:"+X Reorder", s4empty:"Empty!",
+      tipsTitle:"✅ Important tips",
+      tips:[["🕐","Update the stock at the start or end of your shift"],["👀","Always count the physical stock before updating the app"],["🔄","Not sure about a quantity? Count again"],["💬","Problems or questions? Report them to your manager"]],
+    },
+    manager:{
+      title:"Manager Manual", subtitle:"Inventory Management Ruinerwold",
+      goalTitle:"Purpose of the app",
+      goalText:"As a manager you have full visibility of all trays and consumables. You can see directly what needs to be ordered, create monthly order reports and consult the activity log.",
+      s1Title:"Login as Manager", s1a:"Tap the orange", s1b:"button on the start screen.", s1c:"Select your name, enter your password and tap \"Manager login\".", s1tip:"As a manager you can also log in via the Employee button to update stock directly.",
+      s2Title:"Tab: Status — Overview", s2intro:"The Status tab shows a full overview of all stock:", s2g:[["To order","Total products that need to be reordered"],["Trays","Number of active trays and fill percentage"]], s2badge:"Per product you see:", s2ok:"= in order", s2order:"= order",
+      s3Title:"Tab: Consumption — Monthly record", s3intro:"Use this tab to track monthly consumption.", s3wfTitle:"📸 How it works:", s3wf:["Start of the month: tap \"Record monthly stock\"","The app saves the current stock level","At the end of the month you see the consumption per product","Maximum 12 monthly records are saved"],
+      s4Title:"Tab: Log — Activities", s4intro:"The log shows every stock change with name, date and time.", s4tip:"Useful for review: you can see directly who changed what and when.",
+      s5Title:"Order report — Monthly summary", s5intro:"Tap the orange \"Monthly Summary\" button in the Status tab.", s5btns:[["📧","Send by email","Goes to configured recipients"],["⧉","Copy text","Paste in WhatsApp or Teams"],["📄","Download PDF","Save as file"]],
+      s6Title:"Admin — Masterfile (PIN)", s6intro:"Via the purple Admin button on the start screen (PIN required) you can:", s6items:[["Trays","Adjust maximum litres and colour"],["Products","Add, remove or rename products"],["Stock","Manage consumables and targets"],["Accounts","Add employees, change name and password"],["Email","Set recipients for the order report"]],
+      tipsTitle:"✅ Tips for managers",
+      tips:[["📅","Record the monthly stock on the first working day of each month"],["📊","Check the Status tab weekly to order on time"],["📋","Use the log if there are any doubts about the stock"],["🔒","Keep your PIN secret — only you and the administrator have access"]],
+    },
+  },
+  ar:{
+    worker:{
+      title:"دليل الموظف", subtitle:"إدارة المخزون — رونيرفولد",
+      goalTitle:"هدف التطبيق",
+      goalText:"يساعدك هذا التطبيق وزملاءك على تتبع مخزون خزانة السوائل ومستلزمات الاستهلاك. من خلال تحديث المخزون بانتظام، يعرف المدير بالضبط ما يحتاج إلى طلبه — حتى لا يحدث نقص أبدًا.",
+      s1Title:"تسجيل الدخول", s1a:"اضغط على الزر الأخضر", s1b:"في الشاشة الرئيسية.", s1c:"اختر اسمك من القائمة المنسدلة، أدخل كلمة المرور، ثم اضغط على \"تسجيل الدخول\".", s1tip:"نسيت كلمة المرور؟ اسأل مديرك أو المسؤول.",
+      s2Title:"الشاشة الرئيسية — اختر خزانة", s2intro:"بعد تسجيل الدخول ترى خيارين:", s2chemName:"خزانة السوائل", s2chemDesc:"مواد خطرة بالليتر", s2stockName:"المخزون العادي", s2stockDesc:"مستلزمات الاستهلاك بالقطع", s2outro:"اضغط على الخزانة التي تريد تحديثها.",
+      s3Title:"تحديث خزانة السوائل", s3intro:"اختر صينية (من 1 إلى 4). ترى نسبة الامتلاء لكل صينية.", s3btns:"اضغط على منتج واستخدم الأزرار:", s3minus:"إزالة زجاجة (مثلاً: استُخدمت)", s3plus:"إضافة زجاجة (زجاجة جديدة وُضعت)", s3partial:"زجاجة جزئية؟ اختر النسبة المتبقية:", s3warn:"زر \"الإبلاغ عن صينية فارغة\" يضع كل شيء على 0. استخدمه فقط إذا كانت الصينية فارغة فعلاً.",
+      s4Title:"تحديث المخزون العادي", s4intro:"ترى قائمة بمستلزمات الاستهلاك (ورق تواليت، قفازات، إلخ).", s4btns:"استخدم + و − لإدخال الكمية الفعلية الموجودة.", s4ok:"✓ متوفر", s4order:"+X إعادة الطلب", s4empty:"!نفد المخزون",
+      tipsTitle:"✅ نصائح مهمة",
+      tips:[["🕐","قم بتحديث المخزون في بداية أو نهاية وردية عملك"],["👀","احسب المخزون الفعلي دائمًا قبل تحديث التطبيق"],["🔄","غير متأكد من الكمية؟ أعد الحساب مرة أخرى"],["💬","مشاكل أو أسئلة؟ أبلغ مديرك"]],
+    },
+    manager:{
+      title:"دليل المدير", subtitle:"إدارة المخزون — رونيرفولد",
+      goalTitle:"هدف التطبيق",
+      goalText:"بوصفك مديرًا، لديك رؤية كاملة لجميع الصواني ومستلزمات الاستهلاك. يمكنك رؤية ما يحتاج إلى طلب مباشرةً، وإنشاء تقارير طلب شهرية، والاطلاع على سجل الأنشطة.",
+      s1Title:"تسجيل الدخول كمدير", s1a:"اضغط على الزر البرتقالي", s1b:"في الشاشة الرئيسية.", s1c:"اختر اسمك، أدخل كلمة المرور، ثم اضغط على \"تسجيل دخول المدير\".", s1tip:"بوصفك مديرًا، يمكنك أيضًا تسجيل الدخول عبر زر الموظف لتحديث المخزون مباشرةً.",
+      s2Title:"تبويب: الحالة — نظرة عامة", s2intro:"يعرض تبويب الحالة نظرة عامة كاملة على جميع المخزونات:", s2g:[["للطلب","إجمالي المنتجات التي تحتاج إلى إعادة طلب"],["الصواني","عدد الصواني النشطة ونسبة الامتلاء"]], s2badge:"لكل منتج ترى:", s2ok:"= على ما يرام", s2order:"= للطلب",
+      s3Title:"تبويب: الاستهلاك — السجل الشهري", s3intro:"استخدم هذا التبويب لتتبع الاستهلاك الشهري.", s3wfTitle:"📸 طريقة العمل:", s3wf:["بداية الشهر: اضغط على \"تسجيل الحالة الشهرية\"","يحفظ التطبيق مستوى المخزون الحالي","في نهاية الشهر ترى الاستهلاك لكل منتج","يتم الاحتفاظ بـ 12 سجلاً شهريًا كحد أقصى"],
+      s4Title:"تبويب: السجل — الأنشطة", s4intro:"يعرض السجل كل تغيير في المخزون مع الاسم والتاريخ والوقت.", s4tip:"مفيد للمراجعة: يمكنك رؤية من غيّر ماذا ومتى مباشرةً.",
+      s5Title:"تقرير الطلب — التقرير الشهري", s5intro:"اضغط على زر \"التقرير الشهري\" البرتقالي في تبويب الحالة.", s5btns:[["📧","إرسال بالبريد الإلكتروني","يذهب إلى المستلمين المحددين"],["⧉","نسخ النص","الصقه في واتساب أو Teams"],["📄","تحميل PDF","حفظ كملف"]],
+      s6Title:"الإدارة — Masterfile (PIN)", s6intro:"عبر زر الإدارة الأرجواني في الشاشة الرئيسية (يتطلب PIN) يمكنك:", s6items:[["الصواني","تعديل الحد الأقصى للترات واللون"],["المنتجات","إضافة أو حذف أو إعادة تسمية المنتجات"],["المخزون","إدارة مستلزمات الاستهلاك والأهداف"],["الحسابات","إضافة موظفين وتغيير الاسم وكلمة المرور"],["البريد الإلكتروني","تعيين مستلمي تقرير الطلب"]],
+      tipsTitle:"✅ نصائح للمديرين",
+      tips:[["📅","سجّل الحالة الشهرية في أول يوم عمل من كل شهر"],["📊","تحقق من تبويب الحالة أسبوعيًا للطلب في الوقت المناسب"],["📋","استخدم السجل عند وجود شكوك حول المخزون"],["🔒","احتفظ بـ PIN سريًا — أنت والمسؤول فقط لديهما صلاحية الوصول"]],
+    },
+  },
+};
+
+function ManualModal({type,lang="nl",onClose}){
+  const isWorker=type==="worker";
+  const accent=isWorker?"#3D8B2E":"#E8632A";
+  const accentLight=isWorker?"#EEF9E6":"#FDF0EB";
+  const accentBorder=isWorker?"#C8E6B0":"#F5C8A8";
+  const L=(MANUAL_TRANS[lang]||MANUAL_TRANS.nl)[type];
+
+  const Step=({n,icon,title,children})=>(
+    <div style={{display:"flex",gap:14,marginBottom:20}}>
+      <div style={{flexShrink:0,width:36,height:36,borderRadius:"50%",background:accent,color:"#fff",fontFamily:"Nunito,sans-serif",fontWeight:900,fontSize:15,display:"flex",alignItems:"center",justifyContent:"center"}}>{n}</div>
+      <div style={{flex:1}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+          <span style={{fontSize:20}}>{icon}</span>
+          <div style={{fontSize:14,fontWeight:900,color:accent}}>{title}</div>
+        </div>
+        <div style={{fontSize:13,color:"#4A6A3A",lineHeight:1.7}}>{children}</div>
+      </div>
+    </div>
+  );
+
+  const Tip=({icon,children,color="#E8A020",bg="#FFFBEA",border="#F5C842"})=>(
+    <div style={{background:bg,border:`2px solid ${border}`,borderRadius:12,padding:"12px 14px",marginBottom:12,display:"flex",gap:10,alignItems:"flex-start"}}>
+      <span style={{fontSize:20,flexShrink:0}}>{icon}</span>
+      <div style={{fontSize:12,color:"#5A4A00",fontWeight:700,lineHeight:1.6}}>{children}</div>
+    </div>
+  );
+
+  const Badge=({color,bg,children})=>(
+    <span style={{display:"inline-flex",alignItems:"center",padding:"2px 8px",borderRadius:6,fontSize:11,fontWeight:800,background:bg,color,border:`1.5px solid ${color}44`,marginInlineEnd:4}}>{children}</span>
+  );
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:600,display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
+      <div style={{width:"100%",maxWidth:500,minHeight:"100vh",display:"flex",flexDirection:"column",background:"#F8FDF4"}}>
+
+        {/* Header */}
+        <div style={{background:accent,padding:"14px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:10}}>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <span style={{fontSize:22}}>{isWorker?"🧹":"📊"}</span>
+            <div>
+              <div style={{fontSize:16,fontWeight:900,color:"#fff"}}>{L.title}</div>
+              <div style={{fontSize:10,color:"rgba(255,255,255,0.75)"}}>{L.subtitle}</div>
+            </div>
+          </div>
+          <button onClick={onClose} style={{background:"rgba(255,255,255,0.2)",border:"1.5px solid rgba(255,255,255,0.4)",color:"#fff",fontSize:18,width:36,height:36,borderRadius:10,cursor:"pointer",fontWeight:700}}>×</button>
+        </div>
+
+        <div dir={lang==="ar"?"rtl":"ltr"} style={{flex:1,padding:"20px 18px 40px",fontFamily:"Nunito,Arial,sans-serif",background:"#F8FDF4"}}>
+
+          {/* Doel */}
+          <div style={{background:accentLight,border:`2px solid ${accentBorder}`,borderRadius:16,padding:"16px 18px",marginBottom:24}}>
+            <div style={{fontSize:13,fontWeight:900,color:accent,marginBottom:6,display:"flex",alignItems:"center",gap:6}}>
+              <span>🎯</span> {L.goalTitle}
+            </div>
+            <div style={{fontSize:13,color:isWorker?"#4A6A3A":"#6A3A1A",lineHeight:1.7}}>{L.goalText}</div>
+          </div>
+
+          {isWorker ? <>
+            <Step n="1" icon="🔐" title={L.s1Title}>
+              <div>{L.s1a} <Badge color="#3D8B2E" bg="#EEF9E6">🧹 {tr(lang,"worker")}</Badge> {L.s1b}</div>
+              <div style={{marginTop:6}}>{L.s1c}</div>
+              <Tip icon="💡" bg="#F0FAE8" border="#C8E6B0">{L.s1tip}</Tip>
+            </Step>
+
+            <Step n="2" icon="🏠" title={L.s2Title}>
+              <div>{L.s2intro}</div>
+              <div style={{display:"flex",gap:10,margin:"10px 0",flexWrap:"wrap"}}>
+                <div style={{flex:1,minWidth:120,background:"#EEF9E6",border:"2px solid #C8E6B0",borderRadius:10,padding:"10px",textAlign:"center"}}>
+                  <div style={{fontSize:24}}>🧪</div>
+                  <div style={{fontSize:12,fontWeight:800,color:"#3D8B2E",marginTop:4}}>{L.s2chemName}</div>
+                  <div style={{fontSize:10,color:"#8AAA7A",marginTop:2}}>{L.s2chemDesc}</div>
+                </div>
+                <div style={{flex:1,minWidth:120,background:"#EBF3FD",border:"2px solid #90B8E8",borderRadius:10,padding:"10px",textAlign:"center"}}>
+                  <div style={{fontSize:24}}>📦</div>
+                  <div style={{fontSize:12,fontWeight:800,color:"#2D5FA0",marginTop:4}}>{L.s2stockName}</div>
+                  <div style={{fontSize:10,color:"#8AAA7A",marginTop:2}}>{L.s2stockDesc}</div>
+                </div>
+              </div>
+              <div>{L.s2outro}</div>
+            </Step>
+
+            <Step n="3" icon="🧪" title={L.s3Title}>
+              <div>{L.s3intro}</div>
+              <div style={{margin:"8px 0"}}>{L.s3btns}</div>
+              <div style={{display:"flex",gap:8,margin:"8px 0",alignItems:"center"}}>
+                <div style={{width:40,height:40,background:"#F5FBF0",border:"2px solid #C8E6B0",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,fontWeight:900,color:"#3D8B2E",flexShrink:0}}>−</div>
+                <div style={{fontSize:12,color:"#4A6A3A"}}>{L.s3minus}</div>
+              </div>
+              <div style={{display:"flex",gap:8,margin:"8px 0",alignItems:"center"}}>
+                <div style={{width:40,height:40,background:"#F5FBF0",border:"2px solid #C8E6B0",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,fontWeight:900,color:"#3D8B2E",flexShrink:0}}>+</div>
+                <div style={{fontSize:12,color:"#4A6A3A"}}>{L.s3plus}</div>
+              </div>
+              <div style={{margin:"8px 0 4px"}}>{L.s3partial}</div>
+              <div style={{display:"flex",gap:6,margin:"6px 0"}}>
+                {["--","25%","50%","75%"].map(v=>(
+                  <div key={v} style={{padding:"6px 8px",background:v==="50%"?"#EEF9E6":"#F5FBF0",border:`2px solid ${v==="50%"?"#3D8B2E":"#C8E6B0"}`,borderRadius:8,fontSize:11,fontWeight:800,color:v==="50%"?"#3D8B2E":"#8AAA7A"}}>{v}</div>
+                ))}
+              </div>
+              <Tip icon="⚠️" bg="#FDEDEA" border="#D44A2A">{L.s3warn}</Tip>
+            </Step>
+
+            <Step n="4" icon="📦" title={L.s4Title}>
+              <div>{L.s4intro}</div>
+              <div style={{margin:"8px 0"}}>{L.s4btns}</div>
+              <div style={{display:"flex",gap:8,margin:"8px 0",flexWrap:"wrap"}}>
+                <div style={{padding:"6px 10px",borderRadius:8,fontSize:11,fontWeight:800,background:"#EEF9E6",color:"#3D8B2E",border:"2px solid #C8E6B066"}}>{L.s4ok}</div>
+                <div style={{padding:"6px 10px",borderRadius:8,fontSize:11,fontWeight:800,background:"#FFFBEA",color:"#E8A020",border:"2px solid #F5C84266"}}>{L.s4order}</div>
+                <div style={{padding:"6px 10px",borderRadius:8,fontSize:11,fontWeight:800,background:"#FDEDEA",color:"#D44A2A",border:"2px solid #D44A2A66"}}>{L.s4empty}</div>
+              </div>
+            </Step>
+
+            <div style={{background:"#EEF9E6",border:"2px solid #C8E6B0",borderRadius:14,padding:"14px 16px",marginTop:8}}>
+              <div style={{fontSize:13,fontWeight:900,color:"#3D8B2E",marginBottom:10}}>{L.tipsTitle}</div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                {L.tips.map(([icon,text])=>(
+                  <div key={text} style={{display:"flex",gap:10,alignItems:"flex-start"}}>
+                    <span style={{fontSize:16,flexShrink:0}}>{icon}</span>
+                    <span style={{fontSize:12,color:"#4A6A3A",lineHeight:1.5}}>{text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </> : <>
+
+            <Step n="1" icon="🔐" title={L.s1Title}>
+              <div>{L.s1a} <Badge color="#E8632A" bg="#FDF0EB">📊 {tr(lang,"manager")}</Badge> {L.s1b}</div>
+              <div style={{marginTop:6}}>{L.s1c}</div>
+              <Tip icon="💡" bg="#FDF0EB" border="#F5C8A8">{L.s1tip}</Tip>
+            </Step>
+
+            <Step n="2" icon="📊" title={L.s2Title}>
+              <div>{L.s2intro}</div>
+              <div style={{background:"#fff",border:"2px solid #EEF9E6",borderRadius:10,padding:"10px 12px",margin:"8px 0"}}>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
+                  {L.s2g.map(([t,d])=>(
+                    <div key={t} style={{background:"#F5FBF0",borderRadius:8,padding:"8px"}}>
+                      <div style={{fontSize:11,fontWeight:900,color:"#3D8B2E"}}>{t}</div>
+                      <div style={{fontSize:10,color:"#8AAA7A",marginTop:2}}>{d}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>{L.s2badge} <Badge color="#3D8B2E" bg="#EEF9E6">✓</Badge> {L.s2ok} &nbsp; <Badge color="#E8A020" bg="#FFFBEA">+X</Badge> {L.s2order}</div>
+            </Step>
+
+            <Step n="3" icon="📈" title={L.s3Title}>
+              <div>{L.s3intro}</div>
+              <div style={{background:"#fff",border:"2px solid #EEF9E6",borderRadius:10,padding:"12px",margin:"8px 0"}}>
+                <div style={{fontSize:12,fontWeight:800,color:"#3D8B2E",marginBottom:6}}>{L.s3wfTitle}</div>
+                {L.s3wf.map((s,i)=>(
+                  <div key={i} style={{display:"flex",gap:8,marginBottom:5}}>
+                    <div style={{flexShrink:0,width:18,height:18,borderRadius:"50%",background:"#3D8B2E",color:"#fff",fontSize:10,fontWeight:900,display:"flex",alignItems:"center",justifyContent:"center"}}>{i+1}</div>
+                    <div style={{fontSize:12,color:"#4A6A3A"}}>{s}</div>
+                  </div>
+                ))}
+              </div>
+            </Step>
+
+            <Step n="4" icon="📋" title={L.s4Title}>
+              <div>{L.s4intro}</div>
+              <div style={{background:"#fff",border:"2px solid #EEF9E6",borderRadius:10,padding:"10px 12px",margin:"8px 0"}}>
+                <div style={{display:"flex",gap:10,alignItems:"flex-start",padding:"6px 0",borderBottom:"1px solid #EEF9E6"}}>
+                  <span style={{fontSize:10,fontWeight:800,color:"#3D8B2E",background:"#EEF9E6",border:"1.5px solid #3D8B2E44",borderRadius:20,padding:"2px 8px",whiteSpace:"nowrap"}}>Jan</span>
+                  <div><div style={{fontSize:11,fontWeight:700}}>Tray 1 — Glasreiniger: 2 → 3</div><div style={{fontSize:10,color:"#8AAA7A"}}>08 May · 09:14</div></div>
+                </div>
+                <div style={{display:"flex",gap:10,alignItems:"flex-start",padding:"6px 0"}}>
+                  <span style={{fontSize:10,fontWeight:800,color:"#E8632A",background:"#FDF0EB",border:"1.5px solid #E8632A44",borderRadius:20,padding:"2px 8px",whiteSpace:"nowrap"}}>{tr(lang,"manager")}</span>
+                  <div><div style={{fontSize:11,fontWeight:700}}>Monthly stock recorded: May 2026</div><div style={{fontSize:10,color:"#8AAA7A"}}>01 May · 08:02</div></div>
+                </div>
+              </div>
+              <Tip icon="🔍">{L.s4tip}</Tip>
+            </Step>
+
+            <Step n="5" icon="📧" title={L.s5Title}>
+              <div>{L.s5intro}</div>
+              <div style={{display:"flex",gap:8,margin:"10px 0",flexWrap:"wrap"}}>
+                {L.s5btns.map(([icon,t,d])=>(
+                  <div key={t} style={{flex:"1 1 90px",background:"#fff",border:"2px solid #EEF9E6",borderRadius:10,padding:"10px",textAlign:"center"}}>
+                    <div style={{fontSize:22,marginBottom:4}}>{icon}</div>
+                    <div style={{fontSize:11,fontWeight:800,color:"#3D8B2E"}}>{t}</div>
+                    <div style={{fontSize:9,color:"#8AAA7A",marginTop:2}}>{d}</div>
+                  </div>
+                ))}
+              </div>
+            </Step>
+
+            <Step n="6" icon="🔧" title={L.s6Title}>
+              <div>{L.s6intro}</div>
+              <div style={{display:"flex",flexDirection:"column",gap:6,margin:"8px 0"}}>
+                {L.s6items.map(([t,d])=>(
+                  <div key={t} style={{display:"flex",gap:8,alignItems:"center"}}>
+                    <div style={{width:8,height:8,borderRadius:"50%",background:"#7C5CBF",flexShrink:0}}/>
+                    <div style={{fontSize:12,color:"#4A6A3A"}}><strong>{t}:</strong> {d}</div>
+                  </div>
+                ))}
+              </div>
+            </Step>
+
+            <div style={{background:"#FDF0EB",border:"2px solid #F5C8A8",borderRadius:14,padding:"14px 16px",marginTop:8}}>
+              <div style={{fontSize:13,fontWeight:900,color:"#E8632A",marginBottom:10}}>{L.tipsTitle}</div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                {L.tips.map(([icon,text])=>(
+                  <div key={text} style={{display:"flex",gap:10,alignItems:"flex-start"}}>
+                    <span style={{fontSize:16,flexShrink:0}}>{icon}</span>
+                    <span style={{fontSize:12,color:"#6A3A1A",lineHeight:1.5}}>{text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>}
+        </div>
+      </div>
     </div>
   );
 }
