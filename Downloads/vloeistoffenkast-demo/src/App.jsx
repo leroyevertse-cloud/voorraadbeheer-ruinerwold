@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@supabase/supabase-js";
 import jsPDF from "jspdf";
+import { QRCodeSVG } from "qrcode.react";
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -198,7 +199,11 @@ const GF=`@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;
 .btn-hover{transition:opacity .12s ease,transform .12s ease;}
 .btn-hover:hover{opacity:.88;transform:translateY(-1px);}
 .login-card-hover{transition:box-shadow .15s ease,border-color .15s ease;}
-.login-card-hover:hover{box-shadow:0 8px 28px rgba(61,139,46,0.2)!important;}`;
+.login-card-hover:hover{box-shadow:0 8px 28px rgba(61,139,46,0.2)!important;}
+@media print{
+  body>*{display:none!important;}
+  #qr-a4-print{display:flex!important;position:fixed!important;inset:0!important;width:210mm!important;min-height:297mm!important;box-shadow:none!important;}
+}`;
 
 function HelloFreshLogo({size=32}){
   return(
@@ -225,6 +230,7 @@ export default function App() {
   const [adminErr,setAdminErr] = useState(false);
   const [showAdmin,setShowAdmin] = useState(false);
   const [showReport,setShowReport] = useState(false);
+  const [showQR,setShowQR] = useState(false);
   const [pinAttempts,setPinAttempts] = useState(0);
   const [pinLocked,setPinLocked] = useState(false);
   const [auditLog,setAuditLog] = useState([]);
@@ -422,8 +428,18 @@ export default function App() {
               </div>
             )}
           </div>
+
+          {/* QR-code knop */}
+          <div style={{marginTop:12}}>
+            <button
+              onClick={()=>setShowQR(true)}
+              style={{background:"#fff",border:"2.5px solid #C8E6B0",borderRadius:20,padding:"12px 28px",fontFamily:"Nunito,Arial,sans-serif",fontSize:14,fontWeight:800,color:"#3D8B2E",cursor:"pointer",display:"flex",alignItems:"center",gap:8,boxShadow:"0 3px 12px rgba(61,139,46,0.12)"}}>
+              <span style={{fontSize:18}}>📱</span> QR-code afdrukken
+            </button>
+          </div>
         </div>
         {showManual&&<ManualModal type={showManual} lang={lang} onClose={()=>setShowManual(null)}/>}
+        {showQR&&<QRPrintModal cfg={cfg} onClose={()=>setShowQR(false)}/>}
         <Ftr/>
       </div>
     );
@@ -1539,6 +1555,116 @@ function AuditView({log,onClear}){
           </div>
         );
       })}
+    </div>
+  );
+}
+
+function QRPrintModal({cfg,onClose}){
+  const appUrl="https://voorraadbeheer-ruinerwold.netlify.app/";
+  const location=cfg?.location||"Ruinerwold";
+
+  return(
+    <div className="modal-overlay" style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.75)",zIndex:700,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start",overflowY:"auto",padding:"24px 16px"}}>
+      {/* knoppen boven */}
+      <div style={{display:"flex",gap:12,marginBottom:20,flexShrink:0}}>
+        <button onClick={()=>window.print()} style={{background:"#3D8B2E",border:"none",borderRadius:14,padding:"12px 28px",fontFamily:"Nunito,sans-serif",fontSize:15,fontWeight:800,color:"#fff",cursor:"pointer",boxShadow:"0 4px 16px rgba(61,139,46,0.35)"}}>
+          🖨️ Afdrukken
+        </button>
+        <button onClick={onClose} style={{background:"#fff",border:"2px solid #C8E6B0",borderRadius:14,padding:"12px 20px",fontFamily:"Nunito,sans-serif",fontSize:14,fontWeight:800,color:"#3D8B2E",cursor:"pointer"}}>
+          Sluiten
+        </button>
+      </div>
+
+      {/* A4 pagina */}
+      <div id="qr-a4-print" style={{
+        width:"210mm",minHeight:"297mm",background:"#fff",
+        boxShadow:"0 12px 48px rgba(0,0,0,0.4)",
+        display:"flex",flexDirection:"column",
+        fontFamily:"'Nunito',sans-serif",
+        overflow:"hidden",flexShrink:0,
+      }}>
+        {/* Header */}
+        <div style={{background:"linear-gradient(135deg,#1E5514 0%,#2D8B1E 60%,#3DA82A 100%)",padding:"36px 48px",display:"flex",alignItems:"center",gap:24}}>
+          <div style={{width:72,height:72,background:"#fff",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 4px 16px rgba(0,0,0,0.2)"}}>
+            <HelloFreshLogo size={42}/>
+          </div>
+          <div>
+            <div style={{fontSize:36,fontWeight:900,color:"#fff",letterSpacing:-0.5,lineHeight:1}}>HelloFresh</div>
+            <div style={{fontSize:20,fontWeight:700,color:"rgba(255,255,255,0.82)",marginTop:6,letterSpacing:0.5}}>{location}</div>
+          </div>
+          <div style={{marginLeft:"auto",textAlign:"right"}}>
+            <div style={{fontSize:11,fontWeight:800,color:"rgba(255,255,255,0.6)",textTransform:"uppercase",letterSpacing:2}}>Voorraadbeheer</div>
+            <div style={{fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.5)",marginTop:3}}>Toegang via QR-code</div>
+          </div>
+        </div>
+
+        {/* Oranje balk */}
+        <div style={{height:6,background:"linear-gradient(90deg,#E8632A,#F5A060)"}}/>
+
+        {/* Hoofd content */}
+        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"52px 48px 40px"}}>
+          <div style={{fontSize:13,fontWeight:800,color:"#8AAA7A",textTransform:"uppercase",letterSpacing:3,marginBottom:36}}>Scan om de app te openen</div>
+
+          {/* QR code kaart */}
+          <div style={{
+            background:"#fff",border:"5px solid #3D8B2E",borderRadius:28,
+            padding:"32px",
+            boxShadow:"0 16px 56px rgba(61,139,46,0.18)",
+            marginBottom:36,
+            position:"relative",
+          }}>
+            {/* hoekdecoraties */}
+            {[{top:-3,left:-3},{top:-3,right:-3},{bottom:-3,left:-3},{bottom:-3,right:-3}].map((pos,i)=>(
+              <div key={i} style={{position:"absolute",width:20,height:20,background:"#E8632A",borderRadius:4,...pos}}/>
+            ))}
+            <QRCodeSVG
+              value={appUrl}
+              size={280}
+              bgColor="#ffffff"
+              fgColor="#1A3A0A"
+              level="H"
+              marginSize={1}
+            />
+          </div>
+
+          <div style={{fontSize:30,fontWeight:900,color:"#1A3A0A",marginBottom:10,textAlign:"center",letterSpacing:-0.5}}>Voorraadbeheer App</div>
+          <div style={{fontSize:13,fontWeight:700,color:"#8AAA7A",textAlign:"center",letterSpacing:0.5,marginBottom:40}}>{appUrl}</div>
+
+          {/* Scheidingslijn */}
+          <div style={{display:"flex",alignItems:"center",gap:16,width:"100%",maxWidth:380,marginBottom:40}}>
+            <div style={{flex:1,height:2,background:"#EEF9E6"}}/>
+            <div style={{width:10,height:10,background:"#E8632A",borderRadius:"50%"}}/>
+            <div style={{flex:1,height:2,background:"#EEF9E6"}}/>
+          </div>
+
+          {/* Stappen */}
+          <div style={{display:"flex",flexDirection:"column",gap:16,width:"100%",maxWidth:380}}>
+            {[
+              ["1","📷","Open de camera-app op je telefoon"],
+              ["2","🔍","Richt de camera op de QR-code"],
+              ["3","✅","Tik op de melding om in te loggen"],
+            ].map(([num,icon,text])=>(
+              <div key={num} style={{display:"flex",gap:16,alignItems:"center"}}>
+                <div style={{width:36,height:36,background:"linear-gradient(135deg,#3D8B2E,#2D7A1E)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 3px 10px rgba(61,139,46,0.3)"}}>
+                  <span style={{fontSize:14,fontWeight:900,color:"#fff"}}>{num}</span>
+                </div>
+                <div style={{width:36,height:36,background:"#F0FAE8",border:"2px solid #C8E6B0",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:20}}>{icon}</div>
+                <div style={{fontSize:14,fontWeight:700,color:"#1A3A0A",lineHeight:1.4}}>{text}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{background:"#F0FAE8",borderTop:"3px solid #C8E6B0",padding:"20px 48px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div style={{fontSize:12,fontWeight:700,color:"#8AAA7A"}}>HelloFresh {location} · Voorraadbeheer</div>
+          <div style={{display:"flex",gap:6,alignItems:"center"}}>
+            <div style={{width:8,height:8,background:"#3D8B2E",borderRadius:"50%"}}/>
+            <div style={{width:8,height:8,background:"#E8632A",borderRadius:"50%"}}/>
+            <div style={{fontSize:12,fontWeight:700,color:"#8AAA7A",marginLeft:4}}>© 2026</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
