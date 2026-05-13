@@ -877,7 +877,7 @@ function ShelfDetail({shelf,inv,onUpdate,cfg,onAudit,lang="nl"}){
           </div>
         );
       })}
-      <button style={{width:"100%",padding:13,background:"#FDEDEA",border:"2px solid #D44A2A55",color:"#D44A2A",fontFamily:"Nunito,Arial,sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,borderRadius:14,cursor:"pointer",textTransform:"uppercase",marginTop:4,marginBottom:20}} onClick={()=>{aPr(shelf).forEach(p=>{onUpdate(p.id,"full",0);onUpdate(p.id,"partial",0);});onAudit?.(`${shelf.label} leeg gemeld`)}}>
+      <button style={{width:"100%",padding:13,background:"#FDEDEA",border:"2px solid #D44A2A55",color:"#D44A2A",fontFamily:"Nunito,Arial,sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,borderRadius:14,cursor:"pointer",textTransform:"uppercase",marginTop:4,marginBottom:20}} onClick={()=>{if(!window.confirm(`${shelf.label} volledig leeg melden? Dit zet alle producten op 0.`))return;aPr(shelf).forEach(p=>{onUpdate(p.id,"full",0);onUpdate(p.id,"partial",0);});onAudit?.(`${shelf.label} leeg gemeld`)}}>
         {tr(lang,"reportEmpty")}
       </button>
     </div>
@@ -1000,6 +1000,14 @@ function AdminPanel({cfg,onSave}){
                 <div><label className="lbl-responsive" style={al}>Max liters</label><input style={{...ai,width:"100%"}} type="number" value={sh.maxLiters} onChange={e=>upd(`shelves.${si}.maxLiters`,parseFloat(e.target.value)||10)}/></div>
                 <div><label className="lbl-responsive" style={al}>Kleur</label><input type="color" value={sh.color} style={{width:"100%",height:36,border:"none",background:"transparent",cursor:"pointer"}} onChange={e=>upd(`shelves.${si}.color`,e.target.value)}/></div>
                 <div style={{paddingBottom:2}}><button style={{background:"none",border:`1.5px solid ${sh.active?"#2A5A1A":"#5A1A1A"}`,color:sh.active?"#7FE060":"#CC6666",borderRadius:8,width:"100%",height:36,cursor:"pointer",fontSize:10,fontWeight:800}} onClick={()=>upd(`shelves.${si}.active`,!sh.active)}>{sh.active?"AAN":"UIT"}</button></div>
+              </div>
+              <div style={{marginTop:6}}>
+                <label className="lbl-responsive" style={al}>GHS Categorie</label>
+                <select style={{...ai,width:"100%"}} value={sh.category||""} onChange={e=>upd(`shelves.${si}.category`,e.target.value||null)}>
+                  <option value="">— Geen —</option>
+                  <option value="flammable">🔥 GHS02 Ontvlambaar</option>
+                  <option value="corrosive">⚗️ GHS05 Corrosief</option>
+                </select>
               </div>
             </div>
           </div>)}
@@ -1208,6 +1216,7 @@ function VoorraadView({cfg,inv,onUpdate,onAudit,lang="nl"}){
                   onClick={()=>{onUpdate(p.id,"count",cnt-1);onAudit?.(`${p.name}: ${cnt} → ${cnt-1} ${p.unit}`)}}>−</button>
                 <div style={{width:54,height:44,background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,fontWeight:900,color:"#1A3A0A",borderLeft:"2px solid #C8E6B0",borderRight:"2px solid #C8E6B0"}}>{cnt}</div>
                 <button style={{width:44,height:44,background:"#F5FBF0",border:"none",color:"#3D8B2E",fontSize:22,fontWeight:900,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}
+                  disabled={cnt>=p.target*3}
                   onClick={()=>{onUpdate(p.id,"count",cnt+1);onAudit?.(`${p.name}: ${cnt} → ${cnt+1} ${p.unit}`)}}>+</button>
               </div>
               <span style={{fontSize:11,color:"#8AAA7A",fontWeight:700}}>{p.unit} {tr(lang,"present")}</span>
@@ -1217,7 +1226,7 @@ function VoorraadView({cfg,inv,onUpdate,onAudit,lang="nl"}){
       })}
 
       <button style={{width:"100%",padding:13,background:"#FDEDEA",border:"2px solid #D44A2A55",color:"#D44A2A",fontFamily:"Nunito,Arial,sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,borderRadius:14,cursor:"pointer",textTransform:"uppercase",marginTop:4,marginBottom:20}}
-        onClick={()=>{products.forEach(p=>onUpdate(p.id,"count",0));onAudit?.("Normale voorraad leeg gemeld")}}>
+        onClick={()=>{if(!window.confirm("Normale voorraad volledig leeg melden? Dit zet alle artikelen op 0."))return;products.forEach(p=>onUpdate(p.id,"count",0));onAudit?.("Normale voorraad leeg gemeld")}}>
         {tr(lang,"reportStockEmpty")}
       </button>
     </div>
@@ -1469,11 +1478,11 @@ function ManualModal({type,lang="nl",onClose}){
               <div style={{background:"#fff",border:"2px solid #EEF9E6",borderRadius:10,padding:"10px 12px",margin:"8px 0"}}>
                 <div style={{display:"flex",gap:10,alignItems:"flex-start",padding:"6px 0",borderBottom:"1px solid #EEF9E6"}}>
                   <span style={{fontSize:10,fontWeight:800,color:"#3D8B2E",background:"#EEF9E6",border:"1.5px solid #3D8B2E44",borderRadius:20,padding:"2px 8px",whiteSpace:"nowrap"}}>Jan</span>
-                  <div><div style={{fontSize:11,fontWeight:700}}>Tray 1 — Glasreiniger: 2 → 3</div><div style={{fontSize:10,color:"#8AAA7A"}}>08 May · 09:14</div></div>
+                  <div><div style={{fontSize:11,fontWeight:700}}>{lang==="ar"?"الصينية 1 — Glasreiniger: 2 → 3":lang==="en"?"Tray 1 — Glasreiniger: 2 → 3":"Lekbak 1 — Glasreiniger: 2 → 3"}</div><div style={{fontSize:10,color:"#8AAA7A"}}>{lang==="ar"?"08 مايو · 09:14":"08 mei · 09:14"}</div></div>
                 </div>
                 <div style={{display:"flex",gap:10,alignItems:"flex-start",padding:"6px 0"}}>
                   <span style={{fontSize:10,fontWeight:800,color:"#E8632A",background:"#FDF0EB",border:"1.5px solid #E8632A44",borderRadius:20,padding:"2px 8px",whiteSpace:"nowrap"}}>{tr(lang,"manager")}</span>
-                  <div><div style={{fontSize:11,fontWeight:700}}>Monthly stock recorded: May 2026</div><div style={{fontSize:10,color:"#8AAA7A"}}>01 May · 08:02</div></div>
+                  <div><div style={{fontSize:11,fontWeight:700}}>{lang==="ar"?"تم تسجيل الحالة الشهرية: مايو 2026":lang==="en"?"Monthly stock recorded: May 2026":"Maandstand vastgelegd: mei 2026"}</div><div style={{fontSize:10,color:"#8AAA7A"}}>{lang==="ar"?"01 مايو · 08:02":"01 mei · 08:02"}</div></div>
                 </div>
               </div>
               <Tip icon="🔍">{L.s4tip}</Tip>
@@ -1529,7 +1538,7 @@ function AuditView({log,onClear}){
     <div>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
         <div style={{fontSize:11,fontWeight:800,color:"#8AAA7A",textTransform:"uppercase",letterSpacing:2}}>Activiteitenlog ({log.length})</div>
-        {log.length>0&&<button style={{background:"#FDEDEA",border:"1.5px solid #D44A2A44",color:"#D44A2A",borderRadius:8,padding:"4px 10px",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer"}} onClick={onClear}>Wissen</button>}
+        {log.length>0&&<button style={{background:"#FDEDEA",border:"1.5px solid #D44A2A44",color:"#D44A2A",borderRadius:8,padding:"4px 10px",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer"}} onClick={()=>{if(!window.confirm("Hele logboek wissen? Dit kan niet ongedaan worden gemaakt."))return;onClear();}}>Wissen</button>}
       </div>
       {log.length===0&&(
         <div style={{...S.card,textAlign:"center",padding:28}}>
