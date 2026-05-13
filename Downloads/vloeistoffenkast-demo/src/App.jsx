@@ -207,7 +207,7 @@ const GF=`@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;
 
 function HelloFreshLogo({size=32}){
   return(
-    <img src="/hellofresh-logo.svg" height={size} width={size*1.5} style={{display:"inline-block",flexShrink:0,objectFit:"contain"}} alt="HelloFresh"/>
+    <img src={`${import.meta.env.BASE_URL}hellofresh-logo.svg`} height={size} width={size*1.5} style={{display:"inline-block",flexShrink:0,objectFit:"contain"}} alt="HelloFresh"/>
   );
 }
 
@@ -1560,7 +1560,7 @@ function AuditView({log,onClear}){
 }
 
 function QRPrintModal({cfg,onClose}){
-  const appUrl="https://voorraadbeheer-ruinerwold.netlify.app/";
+  const appUrl="https://leroyevertse-cloud.github.io/voorraadbeheer-ruinerwold/";
   const location=cfg?.location||"Ruinerwold";
 
   return(

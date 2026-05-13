@@ -1,25 +1,27 @@
 #!/bin/bash
 set -e
 
-SITE_ID="aa91e87f-570e-418b-9f57-248a1a3aaffd"
+BRANCH="gh-pages"
+WORKTREE="/tmp/vb-gh-pages-deploy"
 
 echo "Bouwen..."
 npm run build
 
-echo "Uploaden naar Netlify (draft)..."
-DEPLOY_OUTPUT=$(netlify deploy --dir=dist 2>&1)
-echo "$DEPLOY_OUTPUT"
+echo "gh-pages branch ophalen..."
+rm -rf "$WORKTREE"
+git worktree add "$WORKTREE" "$BRANCH" 2>/dev/null || \
+  git worktree add --orphan -b "$BRANCH" "$WORKTREE"
 
-DEPLOY_ID=$(echo "$DEPLOY_OUTPUT" | grep -o '[a-f0-9]\{24\}--voorraadbeheer' | head -1 | cut -d'-' -f1)
+echo "Bestanden kopiëren..."
+cp -r dist/. "$WORKTREE/"
+touch "$WORKTREE/.nojekyll"
 
-if [ -z "$DEPLOY_ID" ]; then
-  echo "Fout: kon deploy ID niet vinden in output"
-  exit 1
-fi
+echo "Deployen naar GitHub Pages..."
+git -C "$WORKTREE" add -A
+git -C "$WORKTREE" commit -m "Deploy $(date '+%Y-%m-%d %H:%M')" || echo "Niets gewijzigd."
+git -C "$WORKTREE" push origin "$BRANCH"
 
-echo "Deploy ID: $DEPLOY_ID"
-echo "Publiceren naar productie..."
-netlify api restoreSiteDeploy --data "{\"site_id\": \"$SITE_ID\", \"deploy_id\": \"$DEPLOY_ID\"}" > /dev/null
+git worktree remove "$WORKTREE" 2>/dev/null || true
 
 echo ""
-echo "Klaar! Live op: https://voorraadbeheer-ruinerwold.netlify.app"
+echo "Klaar! Live op: https://leroyevertse-cloud.github.io/voorraadbeheer-ruinerwold/"
